@@ -6,7 +6,6 @@ class EventManager:
         self.mongo = mongo
 
     def add_event(self, event_data):
-        """Add an event to the database."""
         required_fields = [
             "event_name", "event_date", "event_start_time",
             "event_end_time", "event_location", "created_admin_id", "student_details"
@@ -21,12 +20,11 @@ class EventManager:
 
         try:
             self.mongo.db.events.insert_one(event_data)
-            return jsonify({"message": "Event added successfully!", "event": event_data}), 201
+            return jsonify({"message": "Event added successfully!", "event": event_data}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
     def fetch_members(self, filters=None):
-        """Fetch members with optional filters."""
         try:
             if filters:
                 members = self.mongo.db.members.find(filters)

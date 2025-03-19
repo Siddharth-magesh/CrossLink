@@ -52,6 +52,7 @@ class _EventCreationPageState extends State<EventCreationPage> {
         "event_end_time": _endTimeController.text,
         "event_location": _locationController.text,
         "created_admin_id": "001",
+        "event_status": true,
         "student_details": [],
       };
 

@@ -1,0 +1,16 @@
+[
+    {
+        "yrc_id":"22yrc01",
+        "name":"test1",
+        "year":2,
+        "department":"AIDS",
+        "section":"A"
+    },
+    {
+        "yrc_id":"22yrc02",
+        "name":"test2",
+        "year":2,
+        "department":"AIDS",
+        "section":"A"
+    }
+]

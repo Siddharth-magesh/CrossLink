@@ -22,9 +22,17 @@ def home():
 
 @app.route('/api/add_event', methods=['POST'])
 def add_event():
-    print("here")
     event_data = request.get_json()
     return event_manager.add_event(event_data)
+
+@app.route('/api/add_members',methods=['GET','POST'])
+def add_members():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.add_members_to_event(data)
+
+@app.route('/api/view_active_events',methods=['GET','POST'])
+def view_active_events():
+    return event_manager.fetch_events()
 
 @app.route('/api/fetch_members', methods=['GET', 'POST'])
 def fetch_members():

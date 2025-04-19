@@ -18,7 +18,9 @@ class _EventCreationPageState extends State<EventCreationPage> {
   final TextEditingController _mapUrlController = TextEditingController();
 
   Future<void> selectDate(
-      BuildContext context, TextEditingController controller) async {
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -26,13 +28,13 @@ class _EventCreationPageState extends State<EventCreationPage> {
       lastDate: DateTime(2101),
     );
 
-    if (pickedDate != null) {
-      controller.text = "${pickedDate.toLocal()}".split(' ')[0];
-    }
+    controller.text = "${pickedDate.toLocal()}".split(' ')[0];
   }
 
   Future<void> selectTime(
-      BuildContext context, TextEditingController controller) async {
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -61,9 +63,9 @@ class _EventCreationPageState extends State<EventCreationPage> {
       if (success) {
         Navigator.pop(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to create event')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to create event')));
       }
     }
   }

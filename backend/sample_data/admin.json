@@ -1,5 +1,6 @@
 {
-    "username":"001",
+    "registration_number":"001",
+    "name":"test",
     "password":"1234",
     "email":"test@gmail.com"
 }

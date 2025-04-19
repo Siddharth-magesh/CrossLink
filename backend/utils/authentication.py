@@ -7,20 +7,26 @@ class Authentication:
 
     def validate_authentication(self, userData):
         try:
-            if not userData or "username" not in userData or "password" not in userData:
-                return False
-            username = userData["username"]
+            if not userData or "registration_number" not in userData or "password" not in userData:
+                return (False, None)
+            
+            registration_number = userData["registration_number"]
             password = userData["password"]
-            if not username or not password:
-                return False
-            user = self.mongo.db.admin_members.find_one({"username": username})
+            if not registration_number or not password:
+                return (False, None)
+            
+            user = self.mongo.db.admin_members.find_one({"registration_number": registration_number})
+
+            username = user.get("name",None)
+
             if not user or user.get("password") != password:
-                return False
-            return True
-        
+                return (False, None)
+            return (True, registration_number, username)
+    
         except Exception as e:
-            print(f"Error in validate_authentication: {e}")
-            return False
+            print(f"Authentication error: {e}")
+            return (False, None)
+
     
     def fetch_admin_members(self, user_data):
         try:

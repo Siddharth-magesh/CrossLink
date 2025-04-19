@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import os
 from os import path
 from dotenv import load_dotenv
@@ -9,6 +10,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
 
 app = Flask(__name__)
+CORS(app)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
 
@@ -42,12 +44,18 @@ def fetch_members():
 @app.route('/api/login', methods=['GET', 'POST'])
 def login():
     user_details = request.get_json() if request.method == 'POST' else None
-    auth_status = authentication.validate_authentication(user_details)
+    auth_status, auth_token , username = authentication.validate_authentication(user_details)
+    
     if auth_status:
-        return jsonify({"message": "Login successful"}), 200
+        print("Authenticated")
+        return jsonify({
+            "message": "Login successful",
+            "token": auth_token,
+            "username" : username
+        }), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
-    
+  
 @app.route('/api/fetch_admin_profile', methods=['POST'])
 def fetch_admin_profile():
     user_details = request.get_json()

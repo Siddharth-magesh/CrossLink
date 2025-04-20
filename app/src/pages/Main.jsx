@@ -15,7 +15,13 @@ const Main = () => {
       
       {/* Top Bar */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="text-danger fw-bold">Cross<span className="text-white">Link</span></h4>
+        <h4
+          className="text-danger fw-bold mb-0"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/')} // Navigate to home on click
+        >
+          Cross<span className="text-white">Link</span>
+        </h4>
         <span className="fw-semibold">{username}</span>
       </div>
 
@@ -23,17 +29,23 @@ const Main = () => {
       <div className="container">
         <div className="row g-3">
           <div className="col-6">
-          <div className="p-4 bg-danger text-white rounded text-center fw-bold shadow"
+            <div
+              className="p-4 bg-danger text-white rounded text-center fw-bold shadow"
               role="button"
-              onClick={() => navigate('/events')}>
-            Events
-          </div>
-          </div>
-          <div className="col-6">
-            <div className="p-4 bg-danger text-white rounded text-center fw-bold shadow">Attendance</div>
+              onClick={() => navigate('/events')}
+            >
+              Events
+            </div>
           </div>
           <div className="col-6">
-            <div className="p-4 bg-danger text-white rounded text-center fw-bold shadow">OnDuty</div>
+            <div className="p-4 bg-danger text-white rounded text-center fw-bold shadow">
+              Attendance
+            </div>
+          </div>
+          <div className="col-6">
+            <div className="p-4 bg-danger text-white rounded text-center fw-bold shadow">
+              OnDuty
+            </div>
           </div>
         </div>
       </div>

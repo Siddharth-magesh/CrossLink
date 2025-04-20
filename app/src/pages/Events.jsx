@@ -39,7 +39,13 @@ const Events = () => {
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column position-relative">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="text-danger fw-bold">Cross<span className="text-white">Link</span></h4>
+        <h4
+          className="text-danger fw-bold mb-0"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/')} 
+        >
+          Cross<span className="text-white">Link</span>
+        </h4>
         <span className="fw-semibold">{username}</span>
       </div>
 

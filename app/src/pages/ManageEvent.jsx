@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { url_base } from '../config';
+import { useNavigate } from 'react-router-dom';
 
 const ManageEvent = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [eventDetails, setEventDetails] = useState(null);
 
@@ -31,7 +33,13 @@ const ManageEvent = () => {
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="text-danger fw-bold">Cross<span className="text-white">Link</span></h4>
+        <h4
+          className="text-danger fw-bold mb-0"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        >
+          Cross<span className="text-white">Link</span>
+        </h4>
         <span className="fw-semibold">{username}</span>
       </div>
 
@@ -65,9 +73,23 @@ const ManageEvent = () => {
               {eventDetails.student_details.map((student, index) => (
                 <tr key={index}>
                   <td>{student.yrc_id}</td>
-                  <td>{student.status ?? 'Not Marked'}</td>
-                  <td>{student.present_time ?? '-'}</td>
-                  <td>{student.leaving_time ?? '-'}</td>
+                  <td>
+                    {student.status == null
+                      ? 'Not Marked'
+                      : student.status === true
+                      ? 'Present'
+                      : 'Absent'}
+                  </td>
+                  <td>
+                    {student.present_time
+                      ? new Date(student.present_time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})
+                      : '-'}
+                  </td>
+                  <td>
+                    {student.leaving_time
+                      ? new Date(student.leaving_time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})
+                      : '-'}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -82,9 +104,9 @@ const ManageEvent = () => {
           bottom: '20px',
           right: '20px',
           zIndex: 1000,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
         }}
-        onClick={() => alert("Attendance marking screen not implemented yet")}
+        onClick={() => navigate('/scan')}
       >
         Mark Attendance
       </button>

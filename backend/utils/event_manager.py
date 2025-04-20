@@ -8,6 +8,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+from datetime import datetime
+import pytz
 
 class EventManager:
     def __init__(self, mongo: PyMongo):
@@ -69,8 +71,82 @@ class EventManager:
             return jsonify({"data": members_list}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+        
+    def fetch_individual(self, data): 
+        try:
+            unique_id = data.get("unique_token")
+            if not unique_id or "-" not in unique_id:
+                return jsonify({"error": "Invalid token format"}), 400
 
-    def add_members_to_event(self, data): 
+            event_id, yrc_id = unique_id.rsplit("-", 1)
+
+            member = self.mongo.db.members.find_one({"yrc_id": yrc_id})
+            if not member:
+                return jsonify({"error": "Member not found"}), 404
+
+            student_info = {
+                "event_id": event_id,
+                "yrc_id": yrc_id,
+                "name": member.get("name"),
+                "year": member.get("year"),
+                "department": member.get("department")
+            }
+
+            return jsonify({"student_info": student_info}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    def mark_attendence(self, data):
+        try:
+            event_id = data.get("event_id")
+            yrc_id = data.get("yrc_id")
+            status = data.get("status")
+
+            if not all([event_id, yrc_id, status]):
+                return jsonify({"error": "Missing required fields"}), 400
+
+            events_collection = self.mongo.db.events
+
+            event = events_collection.find_one({"event_id": event_id})
+            if not event:
+                return jsonify({"error": "Event not found"}), 404
+
+            ist = pytz.timezone("Asia/Kolkata")
+            timestamp = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
+
+            if status.lower() == "present_time":
+                update_query = {
+                    "$set": {
+                        "student_details.$.status": True,
+                        "student_details.$.present_time": timestamp
+                    }
+                }
+            elif status.lower() == "leaving_time":
+                update_query = {
+                    "$set": {
+                        "student_details.$.status": True,
+                        "student_details.$.leaving_time": timestamp
+                    }
+                }
+            else:
+                return jsonify({"error": "Invalid status value"}), 400
+
+            result = events_collection.update_one(
+                {"event_id": event_id, "student_details.yrc_id": yrc_id},
+                update_query
+            )
+
+            if result.modified_count == 0:
+                return jsonify({"error": "Attendance update failed"}), 404
+
+            return jsonify({"message": "Attendance marked successfully"}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+
+    def add_members_to_event(self, data):
         try:
             yrc_members_id = data.get("yrc_members_id", [])
             event_id = data.get("event_id")
@@ -88,52 +164,43 @@ class EventManager:
                 {"event_id": event_id},
                 {"$set": {"student_details": student_details}}
             )
-            event_details = self.mongo.db.events.find_one({"event_id":event_id})
-            event_name = event_details.get("event_name",None)
-            event_date = event_details.get("event_date",None)
-            event_start_time = event_details.get("event_start_time",None)
-            event_end_time = event_details.get("event_end_time",None)
-            event_location = event_details.get("event_location",None)
-            image_path = self.generate_qr_from_strings(yrc_members_id,event_id)
-            self.generate_emails(
-                event_id,
-                event_name,
-                event_date,
-                event_start_time,
-                event_end_time,
-                event_location,
-                image_path
-            )
 
-            if result.matched_count == 0:
+            event = self.mongo.db.events.find_one({"event_id": event_id})
+            if not event:
                 return jsonify({"error": "Event not found"}), 404
 
-            return jsonify({"message": "Members added successfully"}), 200
+            self.generate_emails(
+                event_id,
+                event.get("event_name"),
+                event.get("event_date"),
+                event.get("event_start_time"),
+                event.get("event_end_time"),
+                event.get("event_location"),
+                yrc_members_id
+            )
+
+            return jsonify({"message": "Members added and emails sent successfully"}), 200
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-    
-    def generate_qr_from_strings(self, member_list, event_id):
-        if not member_list or not all(isinstance(s, str) for s in member_list):
-            raise ValueError("Input must be a list of strings.")
 
-        combined_text = "\n".join(member_list)
+    def generate_qr_for_member(self, event_id, yrc_id, event_name):
+        qr_data = f"{event_id}-{yrc_id}"
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
             border=4,
         )
-        qr.add_data(combined_text)
+        qr.add_data(qr_data)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
 
-        qr_folder = "backend/static/event_qr"
+        qr_folder = "static/event_qr/"+f'{event_name}'
         os.makedirs(qr_folder, exist_ok=True)
-
-        file_path = os.path.join(qr_folder, f"{event_id}.png")
+        file_path = os.path.join(qr_folder, f"{event_id}-{yrc_id}.png")
         img.save(file_path)
-        print(f"QR code saved to '{file_path}' and contains:\n{combined_text}")
+        #print(f"Saved QR: {file_path} with data: {qr_data}")
         return file_path
 
     def send_email_with_attachment(self, subject, recipient, body, image_path, image_cid="event_qr"):
@@ -144,9 +211,7 @@ class EventManager:
 
         msg_alternative = MIMEMultipart("alternative")
         msg.attach(msg_alternative)
-
-        msg_text = MIMEText(body, "html")
-        msg_alternative.attach(msg_text)
+        msg_alternative.attach(MIMEText(body, "html"))
 
         try:
             with open(image_path, "rb") as img_file:
@@ -162,14 +227,11 @@ class EventManager:
                 server.starttls()
                 server.login(self.cred.MAIL_USERNAME, self.cred.MAIL_PASSWORD)
                 server.sendmail(self.cred.BASE_MAIL_ADDRESS, recipient, msg.as_string())
-            print(f"Email sent to {recipient}")
+            #print(f"Email sent to {recipient}")
         except Exception as e:
             print(f"Failed to send email to {recipient}: {e}")
 
-    def generate_emails(self, event_id, event_name, event_date, event_start_time, event_end_time, event_location, image_path):
-        member_ids = [member["yrc_id"] for member in self.mongo.db.events.find_one({"event_id": event_id}).get("student_details", [])]
-        print(member_ids)
-
+    def generate_emails(self, event_id, event_name, event_date, event_start_time, event_end_time, event_location, member_ids):
         for member_id in member_ids:
             member = self.mongo.db.members.find_one({"yrc_id": member_id})
             if not member:
@@ -177,6 +239,7 @@ class EventManager:
 
             email = member.get("email")
             name = member.get("name", "Member")
+            qr_path = self.generate_qr_for_member(event_id, member_id, event_name)
 
             subject = f"You're Invited: {event_name}"
             body = f"""
@@ -193,13 +256,11 @@ class EventManager:
                         <li><strong>End Time:</strong> {event_end_time}</li>
                         <li><strong>Location:</strong> {event_location}</li>
                     </ul>
-                    <p>We look forward to seeing you at the event! If you have any questions, feel free to reach out.</p>
+                    <p>Please find your QR code attached to this email. Show it at the venue for attendance verification.</p>
                     <p>Warm regards,<br><strong>LifeConnect Team</strong></p>
                 </div>
             </body>
             </html>
             """
-            try:
-                self.send_email_with_attachment(subject, email, body, image_path)
-            except Exception as e:
-                print(f"Failed to send email to {email}: {e}")
+
+            self.send_email_with_attachment(subject, email, body, qr_path)

@@ -293,3 +293,22 @@ class EventManager:
             """
 
             self.send_email_with_attachment(subject, email, body, qr_path)
+
+    def close_event(self, data):
+        try:
+            event_id = data.get("event_id", "")
+            if not event_id:
+                return jsonify({"error": "Missing event_id"}), 400
+
+            result = self.mongo.db.events.update_one(
+                {"event_id": event_id},
+                {"$set": {"event_status": False}}
+            )
+
+            if result.modified_count == 0:
+                return jsonify({"message": "No event found or already closed"}), 404
+
+            return jsonify({"message": "Event closed successfully"}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500

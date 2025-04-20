@@ -53,7 +53,32 @@ const ManageEvent = () => {
           <p className="mb-1">📅 {eventDetails.event_date}</p>
           <p className="mb-1">⏰ {eventDetails.event_start_time} - {eventDetails.event_end_time}</p>
           <p className="mb-1">📍 {eventDetails.event_location}</p>
-          <p className="mb-0">👤 Created by: {eventDetails.created_admin_id}</p>
+          <p className="mb-3">👤 Created by: {eventDetails.created_admin_id}</p>
+
+          {/* Close Event Button */}
+          <button
+            className="btn btn-danger"
+            onClick={async () => {
+              const confirmClose = window.confirm("Are you sure you want to close this event?");
+              if (confirmClose) {
+                try {
+                  const res = await fetch(`${url_base}/api/close_events`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ event_id: eventDetails.event_id }),
+                  });
+                  const result = await res.json();
+                  alert(result.message || 'Event closed successfully');
+                  navigate('/events');
+                } catch (err) {
+                  console.error('Error closing event:', err);
+                  alert('Failed to close the event.');
+                }
+              }
+            }}
+          >
+            Close Event
+          </button>
         </div>
       )}
 

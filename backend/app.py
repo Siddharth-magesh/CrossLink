@@ -61,6 +61,11 @@ def fetch_members():
     filters = request.get_json() if request.method == 'POST' else None
     return event_manager.fetch_members(filters)
 
+@app.route('/api/close_events',methods=['GET','POST'])
+def close_events():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.close_event(data)
+
 @app.route('/api/login', methods=['GET', 'POST'])
 def login():
     user_details = request.get_json() if request.method == 'POST' else None

@@ -9,6 +9,7 @@ import ManageEvent from './pages/ManageEvent';
 import ScanQR from './pages/ScanQR';
 import ScanResult from './pages/ScanResult';
 import ManualAttendance from './pages/ManualAttendance';
+import OnDuty from './pages/OnDuty';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/scan" element={<ScanQR />} />
         <Route path="/scan-result" element={<ScanResult />} />
         <Route path="/manual-attendance" element={<ManualAttendance />} />
+        <Route path="/onduty" element={<OnDuty />} />
       </Routes>
     </Router>
   );

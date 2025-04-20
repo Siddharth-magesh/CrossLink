@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request , send_file
 from flask_cors import CORS
 import os
 from os import path
 from dotenv import load_dotenv
 from flask_pymongo import PyMongo
-from utils import EventManager , Authentication
+from utils import EventManager , Authentication , ODGenerator
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
@@ -17,6 +17,7 @@ app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
 mongo = PyMongo(app)
 event_manager = EventManager(mongo)
 authentication = Authentication(mongo)
+OnDutyGenerator = ODGenerator(mongo)
 
 @app.route('/')
 def home():
@@ -91,6 +92,24 @@ def fetch_admin_profile():
         return jsonify({"name": name, "email": email}), 200
     else:
         return jsonify({"error": "User not found"}), 404
+    
+@app.route('/api/generate_od', methods=['POST'])
+def generate_od():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    try:
+        file_path = OnDutyGenerator.generateOnDuty(data)
+        if not os.path.exists(file_path):
+            return jsonify({"error": "OD file was not created"}), 500
+        return send_file(
+            file_path,
+            as_attachment=True,
+            download_name=os.path.basename(file_path),
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

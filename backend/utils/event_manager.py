@@ -96,6 +96,35 @@ class EventManager:
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+        
+    def fetch_individual_manual(self, data): 
+        try:
+            event_id = data.get("event_id")
+            yrc_id = data.get("yrc_id")
+            reg_no = data.get("registration_number")
+
+            if not event_id or not (yrc_id or reg_no):
+                return jsonify({"error": "Missing event ID or student identifier"}), 400
+
+            query = {"yrc_id": yrc_id} if yrc_id else {"registration_number": reg_no}
+            member = self.mongo.db.members.find_one(query)
+
+            if not member:
+                return jsonify({"error": "Member not found"}), 404
+
+            student_info = {
+                "event_id": event_id,
+                "yrc_id": member.get("yrc_id"),
+                "name": member.get("name"),
+                "year": member.get("year"),
+                "department": member.get("department")
+            }
+
+            return jsonify({"student_info": student_info}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
 
     def mark_attendence(self, data):
         try:

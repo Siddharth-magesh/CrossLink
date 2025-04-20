@@ -1,6 +1,7 @@
 [
     {
         "yrc_id":"22yrc01",
+        "registration_number":"113222072001",
         "email":"slathasree1975@gmail.com",
         "name":"test1",
         "year":1,
@@ -10,6 +11,7 @@
     },
     {
         "yrc_id":"22yrc02",
+        "registration_number":"113222072002",
         "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":2,
@@ -19,6 +21,7 @@
     },
     {
         "yrc_id":"22yrc03",
+        "registration_number":"113222072003",
         "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":2,
@@ -28,6 +31,7 @@
     },
     {
         "yrc_id":"22yrc04",
+        "registration_number":"113222072004",
         "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":2,
@@ -37,6 +41,7 @@
     },
     {
         "yrc_id":"22yrc05",
+        "registration_number":"113222072005",
         "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":3,
@@ -46,6 +51,7 @@
     },
     {
         "yrc_id":"22yrc06",
+        "registration_number":"113222072006",
         "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":3,

@@ -46,6 +46,11 @@ def fetch_individual_data():
     data = request.get_json() if request.method == 'POST' else None
     return event_manager.fetch_individual(data)
 
+@app.route('/api/fetch_individual_data_manual',methods=['GET','POST'])
+def fetch_individual_data_manual():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.fetch_individual_manual(data)
+
 @app.route('/api/mark_attendence',methods=['GET','POST'])
 def mark_attendence():
     data = request.get_json() if request.method == 'POST' else None

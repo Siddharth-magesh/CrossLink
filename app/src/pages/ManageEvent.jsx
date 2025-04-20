@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react'; // NEW: useRef
 import { url_base } from '../config';
 import { useNavigate } from 'react-router-dom';
+import html2pdf from 'html2pdf.js'; // If installed via npm
 
 const ManageEvent = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [eventDetails, setEventDetails] = useState(null);
+  const pdfRef = useRef(); // NEW: Reference to the content we want to export
 
   useEffect(() => {
     setUsername(localStorage.getItem('username') || 'User');
@@ -29,6 +31,18 @@ const ManageEvent = () => {
     }
   };
 
+  const handleDownloadPDF = () => {
+    const element = pdfRef.current;
+    const opt = {
+      margin: 0.5,
+      filename: `${eventDetails?.event_name || 'event'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  };
+
   return (
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column">
       {/* Header */}
@@ -43,86 +57,96 @@ const ManageEvent = () => {
         <span className="fw-semibold">{username}</span>
       </div>
 
-      {/* Event Title */}
+      {/* Title */}
       <h5 className="text-white mb-4 text-center">Manage Event</h5>
 
-      {/* Event Data */}
-      {eventDetails && (
-        <div className="mb-4 bg-secondary p-3 rounded">
-          <h6 className="fw-bold">{eventDetails.event_name}</h6>
-          <p className="mb-1">📅 {eventDetails.event_date}</p>
-          <p className="mb-1">⏰ {eventDetails.event_start_time} - {eventDetails.event_end_time}</p>
-          <p className="mb-1">📍 {eventDetails.event_location}</p>
-          <p className="mb-3">👤 Created by: {eventDetails.created_admin_id}</p>
+      {/* PDF Wrapper */}
+      <div ref={pdfRef}> {/* NEW: Wrap the content you want in PDF */}
 
-          {/* Close Event Button */}
-          <button
-            className="btn btn-danger"
-            onClick={async () => {
-              const confirmClose = window.confirm("Are you sure you want to close this event?");
-              if (confirmClose) {
-                try {
-                  const res = await fetch(`${url_base}/api/close_events`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ event_id: eventDetails.event_id }),
-                  });
-                  const result = await res.json();
-                  alert(result.message || 'Event closed successfully');
-                  navigate('/events');
-                } catch (err) {
-                  console.error('Error closing event:', err);
-                  alert('Failed to close the event.');
+        {/* Event Data */}
+        {eventDetails && (
+          <div className="mb-4 bg-secondary p-3 rounded">
+            <h6 className="fw-bold">{eventDetails.event_name}</h6>
+            <p className="mb-1">📅 {eventDetails.event_date}</p>
+            <p className="mb-1">⏰ {eventDetails.event_start_time} - {eventDetails.event_end_time}</p>
+            <p className="mb-1">📍 {eventDetails.event_location}</p>
+            <p className="mb-3">👤 Created by: {eventDetails.created_admin_id}</p>
+
+            {/* Close Event Button */}
+            <button
+              className="btn btn-danger me-2"
+              onClick={async () => {
+                const confirmClose = window.confirm("Are you sure you want to close this event?");
+                if (confirmClose) {
+                  try {
+                    const res = await fetch(`${url_base}/api/close_events`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ event_id: eventDetails.event_id }),
+                    });
+                    const result = await res.json();
+                    alert(result.message || 'Event closed successfully');
+                    navigate('/events');
+                  } catch (err) {
+                    console.error('Error closing event:', err);
+                    alert('Failed to close the event.');
+                  }
                 }
-              }
-            }}
-          >
-            Close Event
-          </button>
-        </div>
-      )}
+              }}
+            >
+              Close Event
+            </button>
 
-      {/* Attendance Table */}
-      {eventDetails?.student_details?.length > 0 && (
-        <div className="table-responsive flex-grow-1 overflow-auto">
-          <table className="table table-bordered table-dark table-striped">
-            <thead>
-              <tr>
-                <th>YRC ID</th>
-                <th>Status</th>
-                <th>Present Time</th>
-                <th>Leaving Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {eventDetails.student_details.map((student, index) => (
-                <tr key={index}>
-                  <td>{student.yrc_id}</td>
-                  <td>
-                    {student.status == null
-                      ? 'Not Marked'
-                      : student.status === true
-                      ? 'Present'
-                      : 'Absent'}
-                  </td>
-                  <td>
-                    {student.present_time
-                      ? new Date(student.present_time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})
-                      : '-'}
-                  </td>
-                  <td>
-                    {student.leaving_time
-                      ? new Date(student.leaving_time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})
-                      : '-'}
-                  </td>
+            {/* Download PDF Button */}
+            <button className="btn btn-light" onClick={handleDownloadPDF}>
+              Download PDF
+            </button>
+          </div>
+        )}
+
+        {/* Attendance Table */}
+        {eventDetails?.student_details?.length > 0 && (
+          <div className="table-responsive">
+            <table className="table table-bordered table-dark table-striped">
+              <thead>
+                <tr>
+                  <th>YRC ID</th>
+                  <th>Status</th>
+                  <th>Present Time</th>
+                  <th>Leaving Time</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {eventDetails.student_details.map((student, index) => (
+                  <tr key={index}>
+                    <td>{student.yrc_id}</td>
+                    <td>
+                      {student.status == null
+                        ? 'Not Marked'
+                        : student.status === true
+                        ? 'Present'
+                        : 'Absent'}
+                    </td>
+                    <td>
+                      {student.present_time
+                        ? new Date(student.present_time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})
+                        : '-'}
+                    </td>
+                    <td>
+                      {student.leaving_time
+                        ? new Date(student.leaving_time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})
+                        : '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      {/* Hovering Mark Attendance Button */}
+      </div> {/* End PDF content */}
+
+      {/* Floating Mark Attendance Button */}
       <button
         className="btn btn-success rounded-pill position-fixed"
         style={{

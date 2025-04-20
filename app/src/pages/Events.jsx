@@ -6,29 +6,28 @@ const Events = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [events, setEvents] = useState([]);
+  const [filterStatus, setFilterStatus] = useState(true);
 
   useEffect(() => {
     setUsername(localStorage.getItem('username') || 'User');
+    fetchEvents(filterStatus);
+  }, [filterStatus]);
 
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch(`${url_base}/api/view_active_events`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+  const fetchEvents = async (status) => {
+    try {
+      const res = await fetch(`${url_base}/api/view_events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
 
-        const data = await res.json();
-        setEvents(data.events || []);
-      } catch (err) {
-        console.error('Failed to fetch events:', err);
-        setEvents([]);
-      }
-    };
-
-    fetchEvents();
-  }, []);
+      const data = await res.json();
+      setEvents(data.events || []);
+    } catch (err) {
+      console.error('Failed to fetch events:', err);
+      setEvents([]);
+    }
+  };
 
   const handleManageClick = (event_id) => {
     sessionStorage.setItem('eventId', event_id);
@@ -38,23 +37,41 @@ const Events = () => {
   return (
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column position-relative">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <h4
           className="text-danger fw-bold mb-0"
           style={{ cursor: 'pointer' }}
-          onClick={() => navigate('/')} 
+          onClick={() => navigate('/')}
         >
           Cross<span className="text-white">Link</span>
         </h4>
         <span className="fw-semibold">{username}</span>
       </div>
 
-      <h5 className="text-white mb-4 text-center">Manage Event</h5>
+      {/* Filter */}
+      <div className="d-flex justify-content-center mb-3">
+        <div className="btn-group">
+          <button
+            className={`btn ${filterStatus ? 'btn-danger' : 'btn-outline-danger'}`}
+            onClick={() => setFilterStatus(true)}
+          >
+            Active
+          </button>
+          <button
+            className={`btn ${!filterStatus ? 'btn-danger' : 'btn-outline-danger'}`}
+            onClick={() => setFilterStatus(false)}
+          >
+            Inactive
+          </button>
+        </div>
+      </div>
+
+      <h5 className="text-white mb-3 text-center">Manage Events</h5>
 
       {/* Scrollable content */}
       <div className="flex-grow-1 overflow-auto">
         {events.length === 0 ? (
-          <p className="text-center text-secondary">No active events</p>
+          <p className="text-center text-secondary">No {filterStatus ? 'active' : 'inactive'} events</p>
         ) : (
           events.map((event, index) => (
             <div key={event.event_id || index} className="bg-danger text-white rounded p-3 mb-3 shadow">

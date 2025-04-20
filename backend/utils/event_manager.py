@@ -37,9 +37,10 @@ class EventManager:
         except Exception as e:
             return jsonify({"error": str(e)}), 500
         
-    def fetch_events(self):
+    def fetch_events(self,data):
         try:
-            events = self.mongo.db.events.find({"event_status": True})
+            status = data.get("status")
+            events = self.mongo.db.events.find({"event_status": status})
             event_list = []
 
             for event in events:

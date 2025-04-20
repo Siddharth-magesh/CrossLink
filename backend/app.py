@@ -32,9 +32,10 @@ def add_members():
     data = request.get_json() if request.method == 'POST' else None
     return event_manager.add_members_to_event(data)
 
-@app.route('/api/view_active_events',methods=['GET','POST'])
-def view_active_events():
-    return event_manager.fetch_events()
+@app.route('/api/view_events',methods=['GET','POST'])
+def view_events():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.fetch_events(data)
 
 @app.route('/api/fetch_event_details',methods=['GET','POST'])
 def fetch_event_details():

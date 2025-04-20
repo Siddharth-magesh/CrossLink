@@ -2,15 +2,49 @@
     {
         "yrc_id":"22yrc01",
         "name":"test1",
-        "year":2,
-        "department":"AIDS",
-        "section":"A"
+        "year":1,
+        "department":"CSE",
+        "section":"A",
+        "events_attended":0
     },
     {
         "yrc_id":"22yrc02",
         "name":"test2",
         "year":2,
         "department":"AIDS",
-        "section":"A"
+        "section":"A",
+        "events_attended":0
+    },
+    {
+        "yrc_id":"22yrc03",
+        "name":"test2",
+        "year":2,
+        "department":"AIDS",
+        "section":"A",
+        "events_attended":0
+    },
+    {
+        "yrc_id":"22yrc04",
+        "name":"test2",
+        "year":2,
+        "department":"AIDS",
+        "section":"A",
+        "events_attended":0
+    },
+    {
+        "yrc_id":"22yrc05",
+        "name":"test2",
+        "year":3,
+        "department":"CSE",
+        "section":"A",
+        "events_attended":0
+    },
+    {
+        "yrc_id":"22yrc06",
+        "name":"test2",
+        "year":3,
+        "department":"AIDS",
+        "section":"A",
+        "events_attended":0
     }
 ]

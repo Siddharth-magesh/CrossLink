@@ -29,17 +29,21 @@ const CreateEvent = () => {
       student_details: [],
       created_admin_id: localStorage.getItem('userId'),
     };
-
+  
     try {
       const res = await fetch(`${url_base}/api/add_event`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
+  
+      const result = await res.json();
+  
       if (res.ok) {
+        const eventId = result.event.event_id;
+        sessionStorage.setItem('eventId', eventId);
         alert('Event created successfully!');
-        navigate('/events');
+        navigate('/add-members');
       } else {
         alert('Failed to create event');
       }
@@ -47,7 +51,7 @@ const CreateEvent = () => {
       console.error('Error creating event:', error);
     }
   };
-
+  
   return (
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column">
       <div className="d-flex justify-content-between align-items-center mb-4">

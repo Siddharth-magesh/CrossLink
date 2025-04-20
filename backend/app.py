@@ -36,6 +36,11 @@ def add_members():
 def view_active_events():
     return event_manager.fetch_events()
 
+@app.route('/api/fetch_event_details',methods=['GET','POST'])
+def fetch_event_details():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.fetch_event_details(data)
+
 @app.route('/api/fetch_members', methods=['GET', 'POST'])
 def fetch_members():
     filters = request.get_json() if request.method == 'POST' else None

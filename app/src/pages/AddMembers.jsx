@@ -6,6 +6,7 @@ const AddMembers = () => {
   const [members, setMembers] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [filters, setFilters] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setUsername(localStorage.getItem('username') || 'User');
@@ -52,14 +53,15 @@ const AddMembers = () => {
   const addMembers = async () => {
     const event_id = sessionStorage.getItem('eventId');
     if (!event_id || selectedIds.length === 0) return alert('No members selected');
-
+  
+    setLoading(true);
     try {
       const res = await fetch(`${url_base}/api/add_members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ yrc_members_id: selectedIds, event_id }),
       });
-
+  
       if (res.ok) {
         alert('Members added successfully!');
         window.location.href = '/events';
@@ -68,28 +70,25 @@ const AddMembers = () => {
       }
     } catch (error) {
       console.error('Error adding members:', error);
+      alert('An error occurred while adding members.');
+    } finally {
+      setLoading(false);
     }
   };
-
+  
   return (
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="text-danger fw-bold">Cross<span className="text-white">Link</span></h4>
         <span className="fw-semibold">{username}</span>
       </div>
-
+  
       <h5 className="text-white mb-4 text-center">Add Members</h5>
-
+  
       {/* Filters */}
       <div className="d-flex gap-2 mb-3 flex-wrap">
         <input className="form-control" placeholder="Name" onChange={e => setFilters({ ...filters, name: e.target.value })} />
-        <select
-          className="form-select"
-          onChange={e => {
-            const val = e.target.value;
-            setFilters({ ...filters, year: val === '' ? '' : parseInt(val) });
-          }}
-        >
+        <select className="form-select" onChange={e => setFilters({ ...filters, year: parseInt(e.target.value) })}>
           <option value="">All Years</option>
           <option value="1">1</option><option value="2">2</option><option value="3">3</option>
         </select>
@@ -106,7 +105,7 @@ const AddMembers = () => {
         </select>
         <button className="btn btn-outline-light" onClick={applyFilter}>Apply Filter</button>
       </div>
-
+  
       {/* Member List */}
       <div className="flex-grow-1 overflow-auto">
         {members.length === 0 ? (
@@ -132,8 +131,6 @@ const AddMembers = () => {
           ))
         )}
       </div>
-
-
       {/* Add Members Button */}
       <button
         className="btn btn-success rounded-pill position-fixed"
@@ -147,8 +144,23 @@ const AddMembers = () => {
       >
         Add Members
       </button>
+  
+      {/* Loading Screen */}
+      {loading && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center"
+          style={{ zIndex: 999 }}
+        >
+          <div className="text-white text-center">
+            <div className="spinner-border text-light" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p>Adding Members...</p>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  );  
 };
 
 export default AddMembers;

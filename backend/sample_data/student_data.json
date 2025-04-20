@@ -1,6 +1,7 @@
 [
     {
         "yrc_id":"22yrc01",
+        "email":"slathasree1975@gmail.com",
         "name":"test1",
         "year":1,
         "department":"CSE",
@@ -9,6 +10,7 @@
     },
     {
         "yrc_id":"22yrc02",
+        "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":2,
         "department":"AIDS",
@@ -17,6 +19,7 @@
     },
     {
         "yrc_id":"22yrc03",
+        "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":2,
         "department":"AIDS",
@@ -25,6 +28,7 @@
     },
     {
         "yrc_id":"22yrc04",
+        "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":2,
         "department":"AIDS",
@@ -33,6 +37,7 @@
     },
     {
         "yrc_id":"22yrc05",
+        "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":3,
         "department":"CSE",
@@ -41,6 +46,7 @@
     },
     {
         "yrc_id":"22yrc06",
+        "email":"siddharthmagesh007@gmail.com",
         "name":"test2",
         "year":3,
         "department":"AIDS",

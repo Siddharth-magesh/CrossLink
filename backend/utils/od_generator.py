@@ -9,6 +9,8 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from .config import Config
 import pythoncom
+from flask import jsonify , send_file
+from bson.objectid import ObjectId
 
 class ODGenerator:
     def __init__(self, mongo: PyMongo):
@@ -109,3 +111,52 @@ class ODGenerator:
         </body>
         </html>
         """
+    
+    def fetch_onduty(self):
+        try:
+            pass_details = self.mongo.db.onduty.find()
+            result = []
+            for doc in pass_details:
+                doc['_id'] = str(doc['_id'])
+                result.append(doc)
+            return jsonify(result), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+    def delete_onduty(self, data):
+        try:
+            od_id = data.get('_id')
+            if not od_id:
+                return jsonify({"error": "No ID provided"}), 400
+
+            result = self.mongo.db.onduty.delete_one({'_id': ObjectId(od_id)})
+            if result.deleted_count == 1:
+                return jsonify({"message": "Deleted successfully"}), 200
+            else:
+                return jsonify({"error": "Document not found"}), 404
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    def download_onduty(self, data):
+        try:
+            if not data:
+                return jsonify({"error": "No data provided"}), 400
+
+            file_path = data.get("file_path")
+            if not file_path or not os.path.exists(file_path):
+                return jsonify({"error": "File not found"}), 404
+
+            ext = os.path.splitext(file_path)[1].lower()
+            mimetype = {
+                '.pdf': 'application/pdf',
+                '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            }.get(ext, 'application/octet-stream')
+
+            return send_file(
+                file_path,
+                as_attachment=True,
+                download_name=os.path.basename(file_path),
+                mimetype=mimetype
+            )
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500

@@ -5,115 +5,108 @@ import { url_base } from '../config';
 const OnDuty = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
-  const [formData, setFormData] = useState({
-    ODname: '',
-    today_date: '',
-    subject: '',
-    body: '',
-    event_date: '',
-    place: '',
-    timings: '',
-  });
+  const [odList, setOdList] = useState([]);
 
   useEffect(() => {
     setUsername(localStorage.getItem('username') || 'User');
+    fetchOdList();
   }, []);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleDownload = async (downloadFormat) => {
+  const fetchOdList = async () => {
     try {
-      // Adding ODname and download_format to the request
-      const newFormData = { ...formData, download_format: downloadFormat };
-
-      const res = await fetch(`${url_base}/api/generate_od`, {
+      const res = await fetch(`${url_base}/api/fetch_onduty`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newFormData),
       });
-
-      if (!res.ok) {
-        const error = await res.json();
-        alert(`Error: ${error.error || 'Failed to generate OD'}`);
-        return;
-      }
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-
-      const disposition = res.headers.get('Content-Disposition');
-      const filename = disposition?.split('filename=')[1]?.replace(/"/g, '') || `onduty.${downloadFormat}`;
-
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      const data = await res.json();
+      setOdList(data);
     } catch (err) {
-      console.error('Download Error:', err);
-      alert('Something went wrong.');
+      console.error("Failed to fetch OnDuty list:", err);
+    }
+  };
+
+  const handleDownload = (path) => {
+    const link = document.createElement('a');
+    link.href = `${url_base}/${path}`;
+    link.setAttribute('download', path.split('/').pop());
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this OnDuty?");
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`${url_base}/api/delete_onduty`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _id: id }),
+      });
+      const result = await res.json();
+      alert(result.message || "Deleted successfully");
+      fetchOdList(); // Refresh list
+    } catch (err) {
+      console.error("Failed to delete:", err);
     }
   };
 
   return (
-    <div className="vh-100 bg-dark text-white p-4" style={{ overflowY: 'auto', backgroundColor: '#343a40' }}>
+    <div
+    className="min-vh-100 bg-dark text-white p-4"
+    style={{ minHeight: '100vh', backgroundColor: '#212529', overflowX: 'hidden' }}
+    >
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="text-danger fw-bold mb-0" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+        <h4
+          className="text-danger fw-bold mb-0"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        >
           Cross<span className="text-white">Link</span>
         </h4>
         <span className="fw-semibold">{username}</span>
       </div>
 
-      {/* Page Heading */}
-      <h5 className="text-center mb-4">On Duty Form</h5>
+      <h5 className="text-center mb-4">OnDuty Documents</h5>
 
-      {/* Form */}
-      <form className="mx-auto" style={{ maxWidth: '600px' }}>
-        <div className="mb-3">
-          <label className="form-label">OD Name</label>
-          <input type="text" className="form-control" name="ODname" value={formData.ODname} onChange={handleChange} required />
-        </div>
+      {/* OD Tiles */}
+      <div className="row">
+        {odList.map((item) => (
+          <div key={item._id} className="col-md-6 col-lg-4 mb-3">
+            <div className="bg-secondary p-3 rounded shadow d-flex flex-column justify-content-between h-100">
+              <div>
+                <h6 className="fw-bold text-white">{item.name}</h6>
+                <p className="mb-1 text-light">📅 {item.date}</p>
+                <p className="text-light small">{item.path}</p>
+              </div>
+              <div className="d-flex justify-content-start gap-2 mt-3">
+                <button className="btn btn-sm btn-success" onClick={() => handleDownload(item.path)}>
+                  Download
+                </button>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(item._id)}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-        <div className="mb-3">
-          <label className="form-label">Today's Date</label>
-          <input type="date" className="form-control" name="today_date" value={formData.today_date} onChange={handleChange} required />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Subject</label>
-          <input type="text" className="form-control" name="subject" value={formData.subject} onChange={handleChange} required />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Body</label>
-          <textarea className="form-control" rows="4" name="body" value={formData.body} onChange={handleChange} required></textarea>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Event Date</label>
-          <input type="date" className="form-control" name="event_date" value={formData.event_date} onChange={handleChange} required />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Place</label>
-          <input type="text" className="form-control" name="place" value={formData.place} onChange={handleChange} required />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Timings</label>
-          <input type="text" className="form-control" name="timings" value={formData.timings} onChange={handleChange} required />
-        </div>
-
-        {/* Download Buttons */}
-        <div className="d-flex justify-content-between gap-3 mt-4">
-          <button type="button" className="btn btn-success" onClick={() => handleDownload('word')}>Download as Word</button>
-          <button type="button" className="btn btn-danger" onClick={() => handleDownload('pdf')}>Download as PDF</button>
-        </div>
-      </form>
+      {/* Floating Create OD Button */}
+      <button
+        className="btn btn-danger rounded-pill position-fixed"
+        style={{
+          bottom: '20px',
+          right: '20px',
+          zIndex: 1000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        }}
+        onClick={() => navigate('/generate-onduty')}
+      >
+        Create OnDuty
+      </button>
     </div>
   );
 };

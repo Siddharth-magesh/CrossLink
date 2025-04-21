@@ -111,5 +111,19 @@ def generate_od():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/fetch_onduty', methods=['POST'])
+def fetch_onduty():
+    return OnDutyGenerator.fetch_onduty()
+    
+@app.route('/api/download_onduty', methods=['POST'])
+def download_onduty():
+    data = request.get_json() if request.method == 'POST' else None
+    return OnDutyGenerator.download_onduty(data)
+
+@app.route('/api/delete_onduty', methods=['POST'])
+def delete_onduty():
+    data = request.get_json() if request.method == 'POST' else None
+    return OnDutyGenerator.delete_onduty(data)
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

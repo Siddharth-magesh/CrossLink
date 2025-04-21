@@ -4,7 +4,7 @@ import os
 from os import path
 from dotenv import load_dotenv
 from flask_pymongo import PyMongo
-from utils import EventManager , Authentication , ODGenerator
+from utils import EventManager , Authentication , ODGenerator , DriveManager
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
@@ -18,6 +18,7 @@ mongo = PyMongo(app)
 event_manager = EventManager(mongo)
 authentication = Authentication(mongo)
 OnDutyGenerator = ODGenerator(mongo)
+drivemanager = DriveManager(mongo)
 
 @app.route('/')
 def home():
@@ -124,6 +125,11 @@ def download_onduty():
 def delete_onduty():
     data = request.get_json() if request.method == 'POST' else None
     return OnDutyGenerator.delete_onduty(data)
+
+@app.route('/api/create_drive_folder', methods=['POST'])
+def create_drive_folder():
+    data = request.get_json()
+    return drivemanager.create_folder(data)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

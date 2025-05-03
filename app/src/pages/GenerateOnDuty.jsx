@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { url_base } from '../config';
+import { logoutUser } from '../utils/session';
 
 const GenerateOnDuty = () => {
   const navigate = useNavigate();
@@ -25,7 +26,6 @@ const GenerateOnDuty = () => {
 
   const handleDownload = async (downloadFormat) => {
     try {
-      // Adding ODname and download_format to the request
       const newFormData = { ...formData, download_format: downloadFormat };
 
       const res = await fetch(`${url_base}/api/generate_od`, {
@@ -59,6 +59,11 @@ const GenerateOnDuty = () => {
     }
   };
 
+  const handleLogout = () => {
+    logoutUser();
+    navigate('/');
+  };
+
   return (
     <div className="vh-100 bg-dark text-white p-4" style={{ overflowY: 'auto', backgroundColor: '#343a40' }}>
       {/* Header */}
@@ -66,7 +71,27 @@ const GenerateOnDuty = () => {
         <h4 className="text-danger fw-bold mb-0" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
           Cross<span className="text-white">Link</span>
         </h4>
-        <span className="fw-semibold">{username}</span>
+
+        {/* Username Dropdown */}
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {username}
+          </button>
+          <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+            <li><span className="dropdown-item text-muted">Profile</span></li>
+            <li>
+              <button className="dropdown-item text-danger" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       {/* Page Heading */}

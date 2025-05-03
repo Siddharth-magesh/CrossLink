@@ -75,7 +75,6 @@ def login():
     auth_status, auth_token , username = authentication.validate_authentication(user_details)
     
     if auth_status:
-        print("Authenticated")
         return jsonify({
             "message": "Login successful",
             "token": auth_token,

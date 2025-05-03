@@ -27,6 +27,7 @@ const CreateEvent = () => {
       ...eventData,
       event_status: true,
       student_details: [],
+      drive_link: '',
       created_admin_id: localStorage.getItem('userId'),
     };
   

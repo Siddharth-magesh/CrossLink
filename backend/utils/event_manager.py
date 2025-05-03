@@ -20,7 +20,7 @@ class EventManager:
         required_fields = [
             "event_name", "event_date", "event_start_time",
             "event_end_time", "event_location", "created_admin_id", "student_details",
-            "event_status"
+            "event_status" , "drive_link"
         ]
         
         if not event_data:

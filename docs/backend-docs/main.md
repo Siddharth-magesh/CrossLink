@@ -51,6 +51,13 @@ Create a **`.env`** file in the root directory and add:
 ```ini
 SECRET_KEY=your_secret_key
 MONGO_URI="mongodb://localhost:27017/crosslink"
+BASE_MAIL_ADDRESS='emailid@gmail.com'
+MAIL_SERVER='smtp.gmail.com'
+MAIL_PORT=587
+MAIL_USERNAME='emailid@gmail.com'
+MAIL_PASSWORD='password'
+MAIL_USE_TLS=True
+MAIL_USE_SSL=False
 ```
 
 ### **6️⃣ Run the Flask App**

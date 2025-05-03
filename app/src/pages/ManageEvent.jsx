@@ -1,12 +1,13 @@
-import { useEffect, useState, useRef } from 'react'; // NEW: useRef
+import { useEffect, useState, useRef } from 'react';
 import { url_base } from '../config';
 import { useNavigate } from 'react-router-dom';
-import html2pdf from 'html2pdf.js'; // If installed via npm
+import html2pdf from 'html2pdf.js';
 
 const ManageEvent = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [eventDetails, setEventDetails] = useState(null);
+  const [driveLink, setDriveLink] = useState('');
   const pdfRef = useRef(); // NEW: Reference to the content we want to export
 
   useEffect(() => {
@@ -101,6 +102,55 @@ const ManageEvent = () => {
             <button className="btn btn-light" onClick={handleDownloadPDF}>
               Download PDF
             </button>
+            {/* Get Drive Link Button */}
+            <button
+              className="btn btn-warning mt-3"
+              onClick={async () => {
+                try {
+                  const res = await fetch(`${url_base}/api/create_drive_folder`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ event_name: eventDetails?.event_name }),
+                  });
+                  const result = await res.json();
+
+                  if (result.success && result.folder_link) {
+                    setDriveLink(result.folder_link);
+                  } else {
+                    alert(result.error || 'Failed to get Drive link');
+                  }
+                } catch (err) {
+                  console.error('Error fetching drive link:', err);
+                  alert('Error occurred while generating Drive link');
+                }
+              }}
+            >
+              Get Drive Link
+            </button>
+
+            {/* Show Drive Link if available */}
+            {driveLink && (
+              <div className="mt-3">
+                <label className="d-block mb-1 text-white">Drive Link:</label>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={driveLink}
+                    readOnly
+                  />
+                  <button
+                    className="btn btn-outline-light"
+                    onClick={() => {
+                      navigator.clipboard.writeText(driveLink);
+                      alert('Link copied to clipboard!');
+                    }}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

@@ -1,43 +1,12 @@
-# **CrossLink – The YRC App for Velammal Engineering College**
+# React + Vite
 
-CrossLink is a **mobile application** designed exclusively for **YRC (Youth Red Cross) members** of **Velammal Engineering College**. It serves as a **one-stop platform** for managing YRC activities, events, and member records efficiently.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
----
+Currently, two official plugins are available:
 
-## **🔹 Key Features**
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-✅ **Event Management** – Organize and track YRC events effortlessly.  
-✅ **Member Directory** – Access and manage YRC member details.  
-✅ **Attendance & Participation** – Record member participation in events.  
-✅ **Admin Controls** – Allow authorized personnel to manage data.
+## Expanding the ESLint configuration
 
----
-
-## **🛠 Tech Stack Used**
-
-### **📱 Frontend (Mobile App)**
-
-- **Flutter** – For cross-platform mobile development.
-- **Dart** – The programming language used for Flutter.
-
-### **🌐 Backend (Microservice)**
-
-- **Flask** – Lightweight Python web framework.
-- **MongoDB** – NoSQL database for storing event and member data.
-- **Flask-PyMongo** – For seamless MongoDB integration.
-
-### **🛠 Additional Tools**
-
-- **Miniconda** – Virtual environment management.
-- **Postman** – API testing and development.
-- **Git & GitHub** – Version control and collaboration.
-
----
-
-## **🎯 Purpose & Benefits**
-
-- **For YRC Members:** Provides easy access to events, participation records, and important updates.
-- **For Admins & Coordinators:** Simplifies event creation, attendance tracking, and member management.
-- **For College Management:** Ensures structured and organized YRC activities.
-
-🚀 **CrossLink enhances collaboration and engagement for YRC members at Velammal Engineering College!**
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

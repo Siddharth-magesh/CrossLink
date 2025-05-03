@@ -41,7 +41,7 @@ class ODGenerator:
 
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         base_filename = f"OD_{timestamp}"
-        folder_path = os.path.join("static", "od_duty", today_date)
+        folder_path = os.path.join("static", "on_duty", today_date)
         os.makedirs(folder_path, exist_ok=True)
 
         docx_path = os.path.join(folder_path, f"{base_filename}.docx")

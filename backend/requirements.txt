@@ -13,13 +13,10 @@ Werkzeug==3.1.3
 qrcode
 dotenv
 secure-smtplib
-#email
 docxtpl
 pytz
 weasyprint
 jinja2
-smtplib
-email
 pytz
 google-api-python-client
 google-auth-httplib2

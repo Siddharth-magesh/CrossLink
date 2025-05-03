@@ -1,5 +1,6 @@
 {
   "name": "app",
+  "homepage": "https://siddharth-magesh.github.io/CrossLink/",
   "private": true,
   "version": "0.0.0",
   "type": "module",

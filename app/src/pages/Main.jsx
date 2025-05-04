@@ -78,6 +78,15 @@ const Main = () => {
               OnDuty
             </div>
           </div>
+          <div className="col-6">
+            <div
+              className="p-4 bg-danger text-white rounded text-center fw-bold shadow"
+              role="button"
+              onClick={() => navigate('/student-management')}
+            >
+              Student Management
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1,17 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Landing from './pages/Landing';
-import Main from './pages/Main';
-import Login from './pages/Login';
-import Events from './pages/Events';
-import CreateEvent from './pages/CreateEvent';
-import AddMembers from './pages/AddMembers';
-import ManageEvent from './pages/ManageEvent';
-import ScanQR from './pages/ScanQR';
-import ScanResult from './pages/ScanResult';
-import ManualAttendance from './pages/ManualAttendance';
-import GenerateOnDuty from './pages/GenerateOnDuty';
-import OnDuty from './pages/OnDuty';
-import Signup from './pages/Signup';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Landing from "./pages/Landing";
+import Main from "./pages/Main";
+import Login from "./pages/Login";
+import Events from "./pages/Events";
+import CreateEvent from "./pages/CreateEvent";
+import AddMembers from "./pages/AddMembers";
+import ManageEvent from "./pages/ManageEvent";
+import ScanQR from "./pages/ScanQR";
+import ScanResult from "./pages/ScanResult";
+import ManualAttendance from "./pages/ManualAttendance";
+import GenerateOnDuty from "./pages/GenerateOnDuty";
+import OnDuty from "./pages/OnDuty";
+import Signup from "./pages/Signup";
+import StudentManagement from "./pages/StudentManagement";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/generate-onduty" element={<GenerateOnDuty />} />
         <Route path="/onduty" element={<OnDuty />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/student-management" element={<StudentManagement />} />
       </Routes>
     </Router>
   );

@@ -32,6 +32,6 @@ export default defineConfig({
   ],
   server: {
     host: true, // Listen on all interfaces for tunnel/port-forward compatibility
-    port: 8080,
+    port: 3030,
   },
 });

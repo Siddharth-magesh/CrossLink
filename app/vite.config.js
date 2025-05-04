@@ -13,7 +13,7 @@ export default defineConfig({
         short_name: "CrossLink",
         start_url: "/",
         display: "standalone",
-        background_color: "#212529",
+        background_color: "#000000",
         theme_color: "#317EFB",
         icons: [
           {

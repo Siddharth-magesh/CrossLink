@@ -1,33 +1,37 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  base: './',
+  base: "./",
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: "autoUpdate",
       manifest: {
-        name: 'CrossLink',
-        short_name: 'CrossLink',
-        start_url: '/',
-        display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#317EFB',
+        name: "CrossLink",
+        short_name: "CrossLink",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#317EFB",
         icons: [
           {
-            src: '/vite.svg',
-            sizes: '192x192',
-            type: 'image/svg+xml',
+            src: "/vite.svg",
+            sizes: "192x192",
+            type: "image/svg+xml",
           },
           {
-            src: '/vite.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml',
-          }
-        ]
-      }
-    })
+            src: "/vite.svg",
+            sizes: "512x512",
+            type: "image/svg+xml",
+          },
+        ],
+      },
+    }),
   ],
+  server: {
+    host: true, // Listen on all interfaces for tunnel/port-forward compatibility
+    port: 8080,
+  },
 });

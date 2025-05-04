@@ -1,10 +1,11 @@
+import os
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from flask import jsonify
 from flask_pymongo import PyMongo
 
 class DriveManager:
-    SERVICE_ACCOUNT_FILE = r'D:\CrossLink\backend\static\auth.json'
+    SERVICE_ACCOUNT_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'auth.json')
     SCOPES = ['https://www.googleapis.com/auth/drive']
 
     def __init__(self, mongo: PyMongo):

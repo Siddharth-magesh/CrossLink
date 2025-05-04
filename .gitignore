@@ -174,3 +174,17 @@ cython_debug/
 .pypirc
 
 **/auth.json
+
+# Ignore all .png and .docx files in static/
+backend/static/*.png
+backend/static/*.docx
+
+# Ignore all contents inside event_qr, od_duty, on_duty
+backend/static/event_qr/*
+backend/static/od_duty/*
+backend/static/on_duty/*
+
+# But keep the folders themselves
+!backend/static/event_qr/
+!backend/static/od_duty/
+!backend/static/on_duty/

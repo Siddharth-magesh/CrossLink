@@ -13,27 +13,31 @@ import GenerateOnDuty from "./pages/GenerateOnDuty";
 import OnDuty from "./pages/OnDuty";
 import Signup from "./pages/Signup";
 import StudentManagement from "./pages/StudentManagement";
+import PwaInstallPrompt from "./pages/PwaInstallPrompt";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/main" element={<Main />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/create-event" element={<CreateEvent />} />
-        <Route path="/add-members" element={<AddMembers />} />
-        <Route path="/manage-event" element={<ManageEvent />} />
-        <Route path="/scan" element={<ScanQR />} />
-        <Route path="/scan-result" element={<ScanResult />} />
-        <Route path="/manual-attendance" element={<ManualAttendance />} />
-        <Route path="/generate-onduty" element={<GenerateOnDuty />} />
-        <Route path="/onduty" element={<OnDuty />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/student-management" element={<StudentManagement />} />
-      </Routes>
-    </Router>
+    <>
+      <PwaInstallPrompt />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/main" element={<Main />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/add-members" element={<AddMembers />} />
+          <Route path="/manage-event" element={<ManageEvent />} />
+          <Route path="/scan" element={<ScanQR />} />
+          <Route path="/scan-result" element={<ScanResult />} />
+          <Route path="/manual-attendance" element={<ManualAttendance />} />
+          <Route path="/generate-onduty" element={<GenerateOnDuty />} />
+          <Route path="/onduty" element={<OnDuty />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/student-management" element={<StudentManagement />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 

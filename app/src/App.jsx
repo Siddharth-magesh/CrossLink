@@ -11,6 +11,7 @@ import ScanResult from './pages/ScanResult';
 import ManualAttendance from './pages/ManualAttendance';
 import GenerateOnDuty from './pages/GenerateOnDuty';
 import OnDuty from './pages/OnDuty';
+import Signup from './pages/Signup';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/manual-attendance" element={<ManualAttendance />} />
         <Route path="/generate-onduty" element={<GenerateOnDuty />} />
         <Route path="/onduty" element={<OnDuty />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );

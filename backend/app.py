@@ -130,5 +130,10 @@ def create_drive_folder():
     data = request.get_json()
     return drivemanager.create_folder(data)
 
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    return authentication.signup(data)
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

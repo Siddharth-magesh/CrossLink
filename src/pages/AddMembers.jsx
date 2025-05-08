@@ -10,7 +10,6 @@ const AddMembers = () => {
 
   useEffect(() => {
     setUsername(localStorage.getItem('username') || 'User');
-    fetchMembers({});
   }, []);
 
   const fetchMembers = async (filterPayload) => {
@@ -35,6 +34,7 @@ const AddMembers = () => {
 
   const applyFilter = () => {
     const cleanedFilters = {};
+
     Object.entries(filters).forEach(([key, value]) => {
       if (
         value !== '' &&
@@ -45,15 +45,15 @@ const AddMembers = () => {
         cleanedFilters[key] = value;
       }
     });
-  
-    console.log("🧪 Sending filters:", cleanedFilters); // Debug log
-    fetchMembers(Object.keys(cleanedFilters).length ? cleanedFilters : {});
+
+    console.log("🧪 Final cleaned filters being sent:", cleanedFilters);
+    fetchMembers(cleanedFilters);
   };
 
   const addMembers = async () => {
     const event_id = sessionStorage.getItem('eventId');
     if (!event_id || selectedIds.length === 0) return alert('No members selected');
-  
+
     setLoading(true);
     try {
       const res = await fetch(`${url_base}/api/add_members`, {
@@ -61,7 +61,7 @@ const AddMembers = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ yrc_members_id: selectedIds, event_id }),
       });
-  
+
       if (res.ok) {
         alert('Members added successfully!');
         window.location.href = '/events';
@@ -75,37 +75,50 @@ const AddMembers = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="text-danger fw-bold">Cross<span className="text-white">Link</span></h4>
         <span className="fw-semibold">{username}</span>
       </div>
-  
+
       <h5 className="text-white mb-4 text-center">Add Members</h5>
-  
+
       {/* Filters */}
       <div className="d-flex gap-2 mb-3 flex-wrap">
-        <input className="form-control" placeholder="Name" onChange={e => setFilters({ ...filters, name: e.target.value })} />
-        <select className="form-select" onChange={e => setFilters({ ...filters, year: parseInt(e.target.value) })}>
+        <input
+          className="form-control"
+          placeholder="Name"
+          onChange={e => setFilters({ ...filters, name: e.target.value })}
+        />
+        <select
+          className="form-select"
+          onChange={e => setFilters({ ...filters, year: parseInt(e.target.value) })}
+        >
           <option value="">All Years</option>
           <option value="1">1</option><option value="2">2</option><option value="3">3</option>
         </select>
-        <select className="form-select" onChange={e => setFilters({ ...filters, department: e.target.value })}>
+        <select
+          className="form-select"
+          onChange={e => setFilters({ ...filters, department: e.target.value })}
+        >
           <option value="">All Departments</option>
           {["AIDS", "CSE", "ECE", "EEE", "MECH", "CIVIL", "AUTO", "IT"].map(dept =>
             <option key={dept} value={dept}>{dept}</option>
           )}
         </select>
-        <select className="form-select" onChange={e => setFilters({ ...filters, section: e.target.value })}>
+        <select
+          className="form-select"
+          onChange={e => setFilters({ ...filters, section: e.target.value })}
+        >
           <option value="">All Sections</option>
           <option value="A">A</option><option value="B">B</option>
           <option value="C">C</option><option value="D">D</option>
         </select>
         <button className="btn btn-outline-light" onClick={applyFilter}>Apply Filter</button>
       </div>
-  
+
       {/* Member List */}
       <div className="flex-grow-1 overflow-auto">
         {members.length === 0 ? (
@@ -131,6 +144,7 @@ const AddMembers = () => {
           ))
         )}
       </div>
+
       {/* Add Members Button */}
       <button
         className="btn btn-success rounded-pill position-fixed"
@@ -144,7 +158,6 @@ const AddMembers = () => {
       >
         Add Members
       </button>
-  
       {/* Loading Screen */}
       {loading && (
         <div
@@ -160,7 +173,7 @@ const AddMembers = () => {
         </div>
       )}
     </div>
-  );  
+  );
 };
 
 export default AddMembers;

@@ -19,7 +19,7 @@ function App() {
   return (
     <>
       <PwaInstallPrompt />
-      <Router>
+      <Router basename="/CrossLink">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/main" element={<Main />} />

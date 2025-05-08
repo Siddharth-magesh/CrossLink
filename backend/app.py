@@ -10,7 +10,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
 
 app = Flask(__name__)
-CORS(app)
+CORS(app,origins=["https://siddharth-magesh.github.io"],supports_credentials=True)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
 

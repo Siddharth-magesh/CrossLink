@@ -20,6 +20,8 @@ authentication = Authentication(mongo)
 OnDutyGenerator = ODGenerator(mongo)
 drivemanager = DriveManager(mongo)
 
+event_manager.cleanup_expired_event_files()
+
 @app.route('/')
 def home():
     return jsonify({"message": "Welcome to CrossLink Backend!"})
@@ -75,7 +77,6 @@ def login():
     auth_status, auth_token , username = authentication.validate_authentication(user_details)
     
     if auth_status:
-        print("Authenticated")
         return jsonify({
             "message": "Login successful",
             "token": auth_token,
@@ -130,6 +131,23 @@ def delete_onduty():
 def create_drive_folder():
     data = request.get_json()
     return drivemanager.create_folder(data)
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    return authentication.signup(data)
+
+@app.route('/api/upload_members_data', methods=['POST'])
+def upload_members_data():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    if not file.filename.endswith('.csv'):
+        return jsonify({"error": "File is not a CSV"}), 400
+    result, status = event_manager.add_students_from_csv(file)
+    return jsonify(result), status
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

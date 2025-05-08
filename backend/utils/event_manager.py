@@ -10,11 +10,55 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from datetime import datetime
 import pytz
+import threading
+import csv
+import io
 
 class EventManager:
     def __init__(self, mongo: PyMongo):
         self.mongo = mongo
         self.cred = Config()
+
+    @staticmethod
+    def extract_student_from_csv_row(row):
+        try:
+            name = f"{row.get('First Name', '').strip()} {row.get('Last Name or Surname', '').strip()}".strip()
+            registration_number = row.get('Registeration Number (Eg: 11322307××××)', '').strip()
+            email = row.get('Email ID (Note: Active Mail ID)', '').strip()
+            yrc_id = row.get('YRC ID (Eg: 23YRC01)', '').strip()
+            year = row.get('Year', '').strip()
+            department = row.get('Department ', '').strip()
+            blood_group = row.get('Blood Group', '').strip()
+            mode_of_transport = row.get('Mode', '').strip()
+            if not (name and registration_number and email):
+                return None
+            return {
+                "name": name,
+                "registration_number": registration_number,
+                "email": email,
+                "yrc_id": yrc_id,
+                "year": year,
+                "department": department,
+                "blood_group": blood_group,
+                "mode_of_transport": mode_of_transport
+            }
+        except Exception:
+            return None
+
+    def add_students_from_csv(self, file_storage):
+        try:
+            stream = io.StringIO(file_storage.stream.read().decode("UTF8"), newline=None)
+            reader = csv.DictReader(stream)
+            students = []
+            for row in reader:
+                student = self.extract_student_from_csv_row(row)
+                if student:
+                    students.append(student)
+            if students:
+                self.mongo.db.members.insert_many(students)
+            return {"message": f"{len(students)} students added successfully"}, 200
+        except Exception as e:
+            return {"error": str(e)}, 500
 
     def add_event(self, event_data):
         required_fields = [
@@ -262,15 +306,13 @@ class EventManager:
             print(f"Failed to send email to {recipient}: {e}")
 
     def generate_emails(self, event_id, event_name, event_date, event_start_time, event_end_time, event_location, member_ids):
-        for member_id in member_ids:
+        def process_member(member_id):
             member = self.mongo.db.members.find_one({"yrc_id": member_id})
             if not member:
-                continue
-
+                return
             email = member.get("email")
             name = member.get("name", "Member")
             qr_path = self.generate_qr_for_member(event_id, member_id, event_name)
-
             subject = f"You're Invited: {event_name}"
             body = f"""
             <!DOCTYPE html>
@@ -292,8 +334,14 @@ class EventManager:
             </body>
             </html>
             """
-
             self.send_email_with_attachment(subject, email, body, qr_path)
+
+        threads = []
+        for member_id in member_ids:
+            t = threading.Thread(target=process_member, args=(member_id,))
+            t.start()
+            threads.append(t)
+        # Not joining threads so API returns immediately
 
     def close_event(self, data):
         try:
@@ -313,3 +361,24 @@ class EventManager:
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+
+    def cleanup_expired_event_files(self):
+        import shutil
+        from datetime import datetime
+        today = datetime.now().date()
+        events = self.mongo.db.events.find()
+        for event in events:
+            event_date_str = event.get("event_date")
+            event_name = event.get("event_name")
+            if not event_date_str or not event_name:
+                continue
+            try:
+                event_date = datetime.strptime(event_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                continue
+            # If today is after the event date
+            if today > event_date:
+                qr_folder = os.path.join("static", "event_qr", event_name)
+                if os.path.exists(qr_folder):
+                    shutil.rmtree(qr_folder)
+                    print(f"Deleted QR folder for expired event: {qr_folder}")

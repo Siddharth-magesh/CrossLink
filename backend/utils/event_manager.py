@@ -27,6 +27,7 @@ class EventManager:
             email = row.get('Email ID (Note: Active Mail ID)', '').strip()
             yrc_id = row.get('YRC ID (Eg: 23YRC01)', '').strip()
             year = row.get('Year', '').strip()
+            year = int(year) if year in ["1","2","3"] else None
             department = row.get('Department ', '').strip()
             blood_group = row.get('Blood Group', '').strip()
             mode_of_transport = row.get('Mode', '').strip()

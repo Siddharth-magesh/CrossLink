@@ -1,7 +1,7 @@
 {
   "name": "CrossLink",
   "short_name": "CrossLink",
-  "start_url": "/",
+  "start_url": "/CrossLink/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#317EFB",

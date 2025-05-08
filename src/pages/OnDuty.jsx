@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { url_base } from '../config';
+import { logoutUser } from '../utils/session';
 
 const OnDuty = () => {
   const navigate = useNavigate();
@@ -52,10 +53,15 @@ const OnDuty = () => {
     }
   };
 
+  const handleLogout = () => {
+    logoutUser();
+    navigate('/');
+  };
+
   return (
     <div
-    className="min-vh-100 bg-dark text-white p-4"
-    style={{ minHeight: '100vh', backgroundColor: '#212529', overflowX: 'hidden' }}
+      className="min-vh-100 bg-dark text-white p-4"
+      style={{ minHeight: '100vh', backgroundColor: '#212529', overflowX: 'hidden' }}
     >
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -66,7 +72,27 @@ const OnDuty = () => {
         >
           Cross<span className="text-white">Link</span>
         </h4>
-        <span className="fw-semibold">{username}</span>
+
+        {/* Username Dropdown */}
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {username}
+          </button>
+          <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+            <li><span className="dropdown-item text-muted">Profile</span></li>
+            <li>
+              <button className="dropdown-item text-danger" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <h5 className="text-center mb-4">OnDuty Documents</h5>

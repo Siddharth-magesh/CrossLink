@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { url_base } from '../config';
 import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../utils/session';
 
 const Events = () => {
   const navigate = useNavigate();
@@ -34,6 +35,11 @@ const Events = () => {
     navigate('/manage-event');
   };
 
+  const handleLogout = () => {
+    logoutUser();
+    navigate('/');
+  };
+
   return (
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column position-relative">
       {/* Header */}
@@ -45,7 +51,27 @@ const Events = () => {
         >
           Cross<span className="text-white">Link</span>
         </h4>
-        <span className="fw-semibold">{username}</span>
+
+        {/* Username Dropdown */}
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {username}
+          </button>
+          <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+            <li><span className="dropdown-item text-muted">Profile</span></li>
+            <li>
+              <button className="dropdown-item text-danger" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       {/* Filter */}
@@ -68,7 +94,7 @@ const Events = () => {
 
       <h5 className="text-white mb-3 text-center">Manage Events</h5>
 
-      {/* Scrollable content */}
+      {/* Scrollable Events */}
       <div className="flex-grow-1 overflow-auto">
         {events.length === 0 ? (
           <p className="text-center text-secondary">No {filterStatus ? 'active' : 'inactive'} events</p>

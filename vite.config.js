@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  base: "/CrossLink",
+  base: "/CrossLink/",
   plugins: [
     react(),
     VitePWA({
@@ -11,10 +11,10 @@ export default defineConfig({
       manifest: {
         name: "CrossLink",
         short_name: "CrossLink",
-        start_url: "/",
+        start_url: "/CrossLink/",
         display: "standalone",
         background_color: "#000000",
-        theme_color: "#317EFB",
+        theme_color: "#BB2D3B",
         icons: [
           {
             src: "/logo.jpg",
@@ -33,6 +33,12 @@ export default defineConfig({
           }, 
         ],
       },
+      workbox: {
+        navigateFallback: '/CrossLink/index.html',
+      },
+      devOptions: {
+        enabled: true
+      }
     }),
   ],
   server: {

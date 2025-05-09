@@ -1,10 +1,10 @@
 {
   "name": "CrossLink",
   "short_name": "CrossLink",
-  "start_url": "/",
+  "start_url": "/CrossLink/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#317EFB",
+  "theme_color": "#BB2D3B",
   "icons": [
     {
       "src": "/logo.jpg",

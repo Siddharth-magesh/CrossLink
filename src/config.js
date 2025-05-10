@@ -1,1 +1,1 @@
-export const url_base = "https://djx504q0-5000.inc1.devtunnels.ms/";
+export const url_base = "https://yrcvec.pythonanywhere.com";

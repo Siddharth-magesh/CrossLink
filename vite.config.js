@@ -14,7 +14,7 @@ export default defineConfig({
         start_url: "/CrossLink/",
         display: "standalone",
         background_color: "#000000",
-        theme_color: "#BB2D3B",
+        theme_color: "#212529",
         icons: [
           {
             src: "/logo.jpg",

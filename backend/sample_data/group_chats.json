@@ -1,0 +1,26 @@
+[
+  {
+    "group_id": "24yrc01g01",
+    "group_name": "YRC First Year",
+    "year": 1,
+    "chat": []
+  },
+  {
+    "group_id": "23yrc01g01",
+    "group_name": "YRC Second Year",
+    "year": 2,
+    "chat": []
+  },
+  {
+    "group_id": "22yrc01g01",
+    "group_name": "YRC Third Year",
+    "year": 3,
+    "chat": []
+  },
+  {
+    "group_id": "21yrc01g01",
+    "group_name": "YRC Fourth Year",
+    "year": 4,
+    "chat": []
+  }
+]

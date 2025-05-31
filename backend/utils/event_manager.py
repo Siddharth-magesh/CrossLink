@@ -61,26 +61,108 @@ class EventManager:
         except Exception as e:
             return {"error": str(e)}, 500
 
+    def send_event_message(self, data):
+        try:
+            event_id = data.get("event_id")
+            eligible_years = data.get("eligible_years", [])
+
+            if not event_id or not eligible_years:
+                return
+
+            # Fetch the event details
+            event = self.mongo.db.events.find_one({"event_id": event_id})
+            if not event:
+                return
+
+            # Format the event message
+            message = (
+                f"*New Event Announcement!*\n\n"
+                f"*Event:* {event.get('event_name')}\n"
+                f"*Date:* {event.get('event_date')}\n"
+                f"*Time:* {event.get('event_start_time')} to {event.get('event_end_time')}\n"
+                f"*Location:* [View Location]({event.get('event_location')})"
+            )
+
+            for year in eligible_years:
+                group = self.mongo.db.group_chats.find_one({"year": year})
+                if not group:
+                    continue
+
+                chat_message = {
+                    "message_id": str(uuid.uuid4()),
+                    "username": "YRC Admin",
+                    "message": message,
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "event_message": True,
+                    "event_id": event_id
+                }
+
+                # Append the message to the chat array
+                self.mongo.db.group_chats.update_one(
+                    {"year": year},
+                    {"$push": {"chat": chat_message}}
+                )
+
+        except Exception as e:
+            print(f"Error in send_event_message: {str(e)}")
+
+    def create_event_form(self, data):
+        try:
+            event_id = data.get("event_id")
+            eligible_years = data.get("eligible_years", [])
+
+            if not event_id or not eligible_years:
+                return jsonify({"error": "Missing event_id or eligible_years"}), 400
+
+            self.mongo.db.event_forms.insert_one({
+                "event_id": event_id,
+                "year": eligible_years,
+                "registered_members": [],
+                "form_status": True
+            })
+
+            self.send_event_message({
+                "event_id": event_id,
+                "eligible_years": eligible_years
+            })
+
+            return jsonify({
+                "message": "Event added successfully!",
+                "event": {
+                    "event_id": event_id,
+                    "eligible_years": eligible_years
+                }
+            }), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
     def add_event(self, event_data):
         required_fields = [
             "event_name", "event_date", "event_start_time",
-            "event_end_time", "event_location", "created_admin_id", "student_details",
-            "event_status" , "drive_link"
+            "event_end_time", "event_location", "created_admin_id",
+            "student_details", "event_status", "drive_link", "eligible_years"
         ]
-        
+
         if not event_data:
-            return jsonify({"error": "No data provided"}), 400
+            return {"error": "No data provided"}, 400
 
         for field in required_fields:
             if field not in event_data:
-                return jsonify({"error": f"Missing field: {field}"}), 400
+                return {"error": f"Missing field: {field}"}, 400
 
         try:
-            event_data["event_id"] = str(uuid.uuid4()) 
+            unique_event_id = str(uuid.uuid4())
+            event_data["event_id"] = unique_event_id
+
+            # Convert eligible_years to a set of integers just in case
+            event_data["eligible_years"] = list(map(int, event_data["eligible_years"]))
+
             self.mongo.db.events.insert_one(event_data)
-            return jsonify({"message": "Event added successfully!", "event": event_data}), 200
+            return {"event_id": unique_event_id}, 200
         except Exception as e:
-            return jsonify({"error": str(e)}), 500
+            return {"error": str(e)}, 500
+
         
     def fetch_events(self,data):
         try:
@@ -383,3 +465,92 @@ class EventManager:
                 if os.path.exists(qr_folder):
                     shutil.rmtree(qr_folder)
                     print(f"Deleted QR folder for expired event: {qr_folder}")
+
+    def view_event_form(self, data):
+        if not data or 'event_id' not in data:
+            return jsonify({"error": "Missing event_id"}), 400
+
+        event_id = data['event_id']
+
+        try:
+            form_data = self.mongo.db.event_forms.find_one({"event_id": event_id})
+
+            if not form_data:
+                return jsonify({"error": "Event form not found"}), 404
+
+            members = form_data.get("registered_members", [])
+
+            if not members:
+                return jsonify({"members": []}), 200
+
+            # Return all relevant fields directly
+            filtered_members = [
+                {
+                    "name": member.get("name", ""),
+                    "year": member.get("year", ""),
+                    "department": member.get("department", ""),
+                    "mode_of_transport": member.get("mode_of_transport", "")
+                }
+                for member in members
+            ]
+
+            return jsonify({"members": filtered_members}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    def close_event_form(self,data):
+        try:
+            event_id = data.get("event_id")
+            if not event_id:
+                return jsonify({"error": "Missing event_id"}), 400
+
+            result = self.mongo.db.event_forms.update_one(
+                {"event_id": event_id},
+                {"$set": {"form_status": False}}
+            )
+
+            if result.modified_count == 0:
+                return jsonify({"message": "No form found or already closed"}), 404
+
+            return jsonify({"message": "Event form closed successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+    def submit_event_form(self, data):
+        try:
+            event_id = data.get('event_id')
+            reg_no = data.get('registration_number')
+
+            if not event_id or not reg_no:
+                return jsonify({"success": False, "message": "Missing event_id or registration_number"}), 400
+
+            member_data = {
+                "registration_number": reg_no,
+                "name": data.get("name"),
+                "year": data.get("year"),
+                "department": data.get("department"),
+                "mode_of_transport": data.get("mode_transport"),
+                "address": data.get("address"),
+                "number": data.get("number"),
+                "emergency_contact": data.get("emergency_contact"),
+                "timestamp": datetime.utcnow()
+            }
+
+            for key in ["name", "year", "department", "mode_transport", "address", "number", "emergency_contact"]:
+                if not member_data.get(key):
+                    return jsonify({"success": False, "message": f"Missing required field: {key}"}), 400
+
+            result = self.mongo.db.event_forms.update_one(
+                {"event_id": event_id},
+                {"$push": {"registered_members": member_data}}
+            )
+
+            if result.matched_count == 0:
+                return jsonify({"success": False, "message": "Event not found"}), 404
+
+            return jsonify({"success": True, "message": "Form submitted successfully"})
+
+        except Exception as e:
+            print(f"Error in submit_event_form: {e}")
+            return jsonify({"success": False, "message": "Internal server error"}), 500

@@ -60,6 +60,7 @@ const MainGroup = () => {
               <div
                 className="p-3 bg-secondary text-white rounded shadow"
                 role="button"
+                onClick={() => navigate('/group-chat')}
               >
                 {groupName}
               </div>

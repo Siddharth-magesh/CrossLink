@@ -11,6 +11,7 @@ const CreateEvent = () => {
     event_end_time: '',
     event_location: '',
   });
+  const [selectedYears, setSelectedYears] = useState([]);
 
   const navigate = useNavigate();
 
@@ -22,6 +23,15 @@ const CreateEvent = () => {
     setEventData({ ...eventData, [e.target.name]: e.target.value });
   };
 
+  const handleYearChange = (e) => {
+    const year = parseInt(e.target.value);
+    if (e.target.checked) {
+      setSelectedYears([...selectedYears, year]);
+    } else {
+      setSelectedYears(selectedYears.filter((y) => y !== year));
+    }
+  };
+
   const handleSubmit = async () => {
     const payload = {
       ...eventData,
@@ -29,22 +39,23 @@ const CreateEvent = () => {
       student_details: [],
       drive_link: '',
       created_admin_id: localStorage.getItem('userId'),
+      eligible_years: selectedYears,
     };
-  
+
     try {
       const res = await fetch(`${url_base}/api/add_event`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-  
+
       const result = await res.json();
-  
+
       if (res.ok) {
         const eventId = result.event.event_id;
         sessionStorage.setItem('eventId', eventId);
         alert('Event created successfully!');
-        navigate('/add-members');
+        navigate('/manage-event');
       } else {
         alert('Failed to create event');
       }
@@ -52,7 +63,7 @@ const CreateEvent = () => {
       console.error('Error creating event:', error);
     }
   };
-  
+
   return (
     <div className="vh-100 bg-dark text-white p-3 d-flex flex-column">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -63,22 +74,43 @@ const CreateEvent = () => {
       <h5 className="text-white mb-4 text-center">Create Event</h5>
 
       <div className="container">
-            {['event_name', 'event_date', 'event_start_time', 'event_end_time', 'event_location'].map((field) => (
-        <div className="mb-3" key={field}>
+        {['event_name', 'event_date', 'event_start_time', 'event_end_time', 'event_location'].map((field) => (
+          <div className="mb-3" key={field}>
             <label htmlFor={field} className="form-label text-capitalize text-white">
-            {field.replace(/_/g, ' ')}
+              {field.replace(/_/g, ' ')}
             </label>
             <input
-            id={field}
-            type={field.includes('date') ? 'date' : field.includes('time') ? 'time' : 'text'}
-            name={field}
-            className="form-control"
-            value={eventData[field]}
-            onChange={handleChange}
-            required
+              id={field}
+              type={field.includes('date') ? 'date' : field.includes('time') ? 'time' : 'text'}
+              name={field}
+              className="form-control"
+              value={eventData[field]}
+              onChange={handleChange}
+              required
             />
-        </div>
+          </div>
         ))}
+
+        {/* Year Checkboxes */}
+        <div className="mb-4">
+          <label className="form-label text-white d-block">Eligible Years</label>
+          <div className="d-flex flex-wrap gap-3">
+            {[1, 2, 3, 4].map((year) => (
+              <div className="form-check" key={year}>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id={`year-${year}`}
+                  value={year}
+                  onChange={handleYearChange}
+                />
+                <label className="form-check-label" htmlFor={`year-${year}`}>
+                  Year {year}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <button className="btn btn-danger w-100 fw-bold" onClick={handleSubmit}>
           Create

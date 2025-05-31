@@ -1,6 +1,16 @@
-{
-    "registration_number":"001",
-    "name":"test",
-    "password":"1234",
-    "email":"test@gmail.com"
-}
+[
+    {
+        "registration_number":"113222072094",
+        "name":"Siddharth Magesh",
+        "password":"scrypt:32768:8:1$O8wx2Ylb9Y5nTFQm$1c0e3c6a31cddc3ad563ab14d6c957b9d3589fce6299370e0a05adbfd7eb0364be7bb62f1d5c2d5b133d3d3f462ca7d12d00fb438c94f43012223a7b3182c35f",
+        "email":"siddharthmagesh@gmail.com",
+        "role":"admin"
+    },
+    {
+        "registration_number":"113222072094",
+        "name":"Dakshan K",
+        "password":"scrypt:32768:8:1$O8wx2Ylb9Y5nTFQm$1c0e3c6a31cddc3ad563ab14d6c957b9d3589fce6299370e0a05adbfd7eb0364be7bb62f1d5c2d5b133d3d3f462ca7d12d00fb438c94f43012223a7b3182c35f",
+        "email":"dakshan195@gmail.com",
+        "role":"admin"
+    }
+]

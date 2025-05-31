@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Main from "./pages/Main";
-import Login from "./pages/Login";
+import AdminLogin from "./pages/AdminLogin";
+import UserLogin from "./pages/UserLogin";
 import Events from "./pages/Events";
 import CreateEvent from "./pages/CreateEvent";
 import AddMembers from "./pages/AddMembers";
@@ -14,6 +15,8 @@ import OnDuty from "./pages/OnDuty";
 import Signup from "./pages/Signup";
 import StudentManagement from "./pages/StudentManagement";
 import PwaInstallPrompt from "./pages/PwaInstallPrompt";
+import UserDashboard from "./pages/UserDashBoard";
+import MainGroup from "./pages/MainGroup";
 
 function App() {
   return (
@@ -23,7 +26,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/main" element={<Main />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/user-login" element={<UserLogin />} />
           <Route path="/events" element={<Events />} />
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/add-members" element={<AddMembers />} />
@@ -35,6 +39,9 @@ function App() {
           <Route path="/onduty" element={<OnDuty />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/student-management" element={<StudentManagement />} />
+          <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route path="/main-group" element={<MainGroup />} />
+          {/* Add more routes as needed */}
         </Routes>
       </Router>
     </>

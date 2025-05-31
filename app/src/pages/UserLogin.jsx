@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../utils/session';
 import { url_base } from '../config';
 
-const Login = () => {
+const UserLogin = () => {
   const [regNo, setRegNo] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,7 +13,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${url_base}/api/login`, {
+      const res = await fetch(`${url_base}/api/user_login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ const Login = () => {
 
       if (res.ok) {
         loginUser(data.token, data.username);
-        navigate('/main');
+        navigate('/user-dashboard');
       } else {
         setError(data.error || 'Login failed');
       }
@@ -40,7 +40,7 @@ const Login = () => {
   return (
     <div className="d-flex vh-100 justify-content-center align-items-center bg-dark text-white">
       <form onSubmit={handleLogin} className="w-75">
-        <h2 className="mb-4 text-center">Login</h2>
+        <h2 className="mb-4 text-center">User Login</h2>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
@@ -77,9 +77,19 @@ const Login = () => {
             Signup
           </span>
         </div>
+        <div className="text-center mt-3">
+          <span>Admin Login </span>
+          <span
+            className="text-danger"
+            style={{ cursor: 'pointer' }}
+            onClick={() => navigate('/admin-login')}
+          >
+            Login
+          </span>
+        </div>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default UserLogin;

@@ -4,7 +4,7 @@ import os
 from os import path
 from dotenv import load_dotenv
 from flask_pymongo import PyMongo
-from utils import EventManager , Authentication , ODGenerator , DriveManager
+from utils import EventManager , Authentication , ODGenerator , DriveManager , MemberManager
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
@@ -19,6 +19,7 @@ event_manager = EventManager(mongo)
 authentication = Authentication(mongo)
 OnDutyGenerator = ODGenerator(mongo)
 drivemanager = DriveManager(mongo)
+memberManager = MemberManager(mongo)
 
 event_manager.cleanup_expired_event_files()
 
@@ -71,7 +72,7 @@ def close_events():
     data = request.get_json() if request.method == 'POST' else None
     return event_manager.close_event(data)
 
-@app.route('/api/login', methods=['GET', 'POST'])
+@app.route('/api/admin_login', methods=['GET', 'POST'])
 def login():
     user_details = request.get_json() if request.method == 'POST' else None
     auth_status, auth_token , username = authentication.validate_authentication(user_details)
@@ -81,6 +82,20 @@ def login():
             "message": "Login successful",
             "token": auth_token,
             "username" : username
+        }), 200
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
+    
+@app.route('/api/user_login', methods=['POST'])
+def user_login():
+    user_data = request.get_json() if request.method == 'POST' else None    
+    auth_status, registration_number, username = authentication.validate_user_authentication(user_data)
+    
+    if auth_status:
+        return jsonify({
+            "message": "Login successful",
+            "token": registration_number,
+            "username": username
         }), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
@@ -148,6 +163,11 @@ def upload_members_data():
         return jsonify({"error": "File is not a CSV"}), 400
     result, status = event_manager.add_students_from_csv(file)
     return jsonify(result), status
+
+@app.route('/api/main_group_details', methods=['POST'])
+def main_group_details():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.get_main_group_details(data)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

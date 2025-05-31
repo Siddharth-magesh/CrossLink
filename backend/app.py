@@ -30,7 +30,15 @@ def home():
 @app.route('/api/add_event', methods=['POST'])
 def add_event():
     event_data = request.get_json()
-    return event_manager.add_event(event_data)
+    result, status = event_manager.add_event(event_data)
+
+    if status != 200:
+        return jsonify(result), status
+
+    return event_manager.create_event_form({
+        "event_id": result["event_id"],
+        "eligible_years": event_data["eligible_years"]
+    })
 
 @app.route('/api/add_members',methods=['GET','POST'])
 def add_members():
@@ -168,6 +176,31 @@ def upload_members_data():
 def main_group_details():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.get_main_group_details(data)
+
+@app.route('/api/view_event_form', methods=['POST'])
+def view_event_form():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.view_event_form(data)
+
+@app.route('/api/close_form', methods=['POST'])
+def close_form():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.close_event_form(data)
+
+@app.route('/api/group_chat', methods=['POST'])
+def group_chat():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.get_chat_messages(data)
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.add_chat_message(data)
+
+@app.route('/api/submit_form', methods=['POST'])
+def submit_form():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.submit_event_form(data)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

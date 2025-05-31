@@ -17,6 +17,9 @@ import StudentManagement from "./pages/StudentManagement";
 import PwaInstallPrompt from "./pages/PwaInstallPrompt";
 import UserDashboard from "./pages/UserDashBoard";
 import MainGroup from "./pages/MainGroup";
+import ManageForm from "./pages/ManageForm";
+import GroupChat from "./pages/GroupChat";
+import Form from "./pages/Form";
 
 function App() {
   return (
@@ -41,6 +44,9 @@ function App() {
           <Route path="/student-management" element={<StudentManagement />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/main-group" element={<MainGroup />} />
+          <Route path="/manage-form" element={<ManageForm />} />
+          <Route path="/group-chat" element={<GroupChat />} />
+          <Route path="/form" element={<Form />} />
           {/* Add more routes as needed */}
         </Routes>
       </Router>

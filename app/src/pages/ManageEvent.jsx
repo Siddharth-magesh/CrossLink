@@ -128,6 +128,14 @@ const ManageEvent = () => {
               Get Drive Link
             </button>
 
+            {/* Manage Form Button */}
+            <button
+              className="btn btn-info mt-3 ms-2"
+              onClick={() => navigate('/manage-form')}
+            >
+              Manage Form
+            </button>
+
             {/* Show Drive Link if available */}
             {driveLink && (
               <div className="mt-3">

@@ -28,6 +28,28 @@ class Authentication:
             print(f"Authentication error: {e}")
             return (False, None, None)
 
+    def validate_user_authentication(self, userData):
+        try:
+            if not userData or "registration_number" not in userData or "password" not in userData:
+                return (False, None, None)
+            
+            registration_number = userData["registration_number"]
+            password = userData["password"]
+            if not registration_number or not password:
+                return (False, None, None)
+            
+            user = self.mongo.db.members.find_one({"registration_number": registration_number})
+            print(f"User found: {user}")
+            username = user.get("name", None) if user else None
+            print(f"Username: {username}")
+
+            if not user or not check_password_hash(user.get("password", ""), password):
+                return (False, None, None)
+            return (True, registration_number, username)
+    
+        except Exception as e:
+            print(f"User authentication error: {e}")
+            return (False, None, None)
     
     def fetch_admin_members(self, user_data):
         try:

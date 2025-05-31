@@ -10,7 +10,7 @@ const Landing = () => {
       if (isAuthenticated()) {
         navigate('/main');
       } else {
-        navigate('/login');
+        navigate('/user-login');
       }
     }, 1000);
 

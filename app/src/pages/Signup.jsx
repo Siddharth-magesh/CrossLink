@@ -28,7 +28,7 @@ const Signup = () => {
       const data = await res.json();
       if (res.ok) {
         alert('Signup successful! Please login.');
-        navigate('/login');
+        navigate('/user-login');
       } else {
         setError(data.error || 'Signup failed');
       }
@@ -92,7 +92,7 @@ const Signup = () => {
           <span
             className="text-danger"
             style={{ cursor: 'pointer' }}
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/user-login')}
           >
             Login
           </span>

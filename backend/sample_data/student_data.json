@@ -14,7 +14,8 @@
         "group_id": "21yrc01g01",
         "group_name": "YRC Fourth Year"
       }
-    ]
+    ],
+    "event_groups": []
   },
   {
     "yrc_id": "21yrc02",
@@ -31,6 +32,7 @@
         "group_id": "21yrc01g01",
         "group_name": "YRC Fourth Year"
       }
-    ]
+    ],
+    "event_groups": []
   }
 ]

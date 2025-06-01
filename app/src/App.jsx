@@ -20,6 +20,8 @@ import MainGroup from "./pages/MainGroup";
 import ManageForm from "./pages/ManageForm";
 import GroupChat from "./pages/GroupChat";
 import Form from "./pages/Form";
+import EventsGroup from "./pages/EventsGroup";
+import EventChat from "./pages/EventChat";
 
 function App() {
   return (
@@ -47,6 +49,8 @@ function App() {
           <Route path="/manage-form" element={<ManageForm />} />
           <Route path="/group-chat" element={<GroupChat />} />
           <Route path="/form" element={<Form />} />
+          <Route path="/events-group" element={<EventsGroup />} />
+          <Route path="/event-chat" element={<EventChat />} />
           {/* Add more routes as needed */}
         </Routes>
       </Router>

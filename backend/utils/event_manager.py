@@ -608,7 +608,7 @@ class EventManager:
                 "timestamp": datetime.utcnow()
             }
 
-            for key in ["name", "year", "department", "mode_transport", "address", "number", "emergency_contact"]:
+            for key in ["name", "year", "department", "mode_of_transport", "address", "number", "emergency_contact"]:
                 if not member_data.get(key):
                     return jsonify({"success": False, "message": f"Missing required field: {key}"}), 400
 

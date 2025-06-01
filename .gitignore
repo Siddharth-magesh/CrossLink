@@ -188,4 +188,3 @@ backend/static/on_duty/*
 !backend/static/event_qr/
 !backend/static/od_duty/
 !backend/static/on_duty/
-./app/

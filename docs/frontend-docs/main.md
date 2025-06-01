@@ -101,7 +101,7 @@ The project primarily uses React's local state (`useState`) for managing compone
 
 API calls are performed using the native `fetch` API with async/await syntax.
 
-Base API URL and constants are centralized in `src/config.js`. API utility functions are located in `src/utils/api.js` (or similar).
+Base API URL and constants are centralized in `src/config.js`(if not present create one with contents : export const url_base = ""). API utility functions are located in `src/utils/api.js` (or similar).
 
 Example usage:
 

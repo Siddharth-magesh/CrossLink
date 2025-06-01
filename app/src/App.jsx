@@ -44,7 +44,7 @@ function App() {
           <Route path="/generate-onduty" element={<GenerateOnDuty />} />
           <Route path="/onduty" element={<OnDuty />} />
           <Route path="/user-signup" element={<Signup />} />
-          <Route path="/signup-admin" element={<SignupAdmin  />} />
+          <Route path="/admin-signup" element={<SignupAdmin  />} />
           <Route path="/student-management" element={<StudentManagement />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/main-group" element={<MainGroup />} />

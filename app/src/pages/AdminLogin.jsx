@@ -72,7 +72,7 @@ const AdminLogin = () => {
           <span
             className="text-danger"
             style={{ cursor: 'pointer' }}
-            onClick={() => navigate('/user-signup')}
+            onClick={() => navigate('/admin-signup')}
           >
             Signup
           </span>

@@ -206,7 +206,7 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
-## 🧑‍🎓 Student Management
+##  Student Management
 
 ### POST `/api/upload_members_data`
 
@@ -228,7 +228,7 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
-## 📋 Attendance
+##  Attendance
 
 ### POST `/api/mark_attendence`
 
@@ -271,7 +271,7 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
-## 📝 On-Duty Management
+##  On-Duty Management
 
 ### POST `/api/generate_od`
 
@@ -323,7 +323,7 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
-## 📁 Google Drive Integration
+##  Google Drive Integration
 
 ### POST `/api/create_drive_folder`
 
@@ -347,7 +347,7 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
-## 👥 Group Management
+##  Group Management
 
 ### POST `/api/main_group_details`
 
@@ -375,7 +375,7 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
-## 💬 Chat Management
+##  Chat Management
 
 ### POST `/api/group_chat`
 
@@ -431,7 +431,7 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
-## 🧪 Miscellaneous
+##  Miscellaneous
 
 ### GET `/`
 

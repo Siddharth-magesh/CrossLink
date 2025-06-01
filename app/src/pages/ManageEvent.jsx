@@ -168,7 +168,7 @@ const ManageEvent = () => {
             <table className="table table-bordered table-dark table-striped">
               <thead>
                 <tr>
-                  <th>YRC ID</th>
+                  <th>Regsitrattion Number</th>
                   <th>Status</th>
                   <th>Present Time</th>
                   <th>Leaving Time</th>
@@ -177,7 +177,7 @@ const ManageEvent = () => {
               <tbody>
                 {eventDetails.student_details.map((student, index) => (
                   <tr key={index}>
-                    <td>{student.yrc_id}</td>
+                    <td>{student.registration_number}</td>
                     <td>
                       {student.status == null
                         ? 'Not Marked'

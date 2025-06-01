@@ -7,6 +7,7 @@ const ManageForm = () => {
   const [username, setUsername] = useState('');
   const [formMembers, setFormMembers] = useState([]);
   const [eventClosed, setEventClosed] = useState(false);
+  const [formAlreadyClosed, setFormAlreadyClosed] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -24,10 +25,19 @@ const ManageForm = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ event_id }),
       });
+
+      if (res.status === 403) {
+        const result = await res.json();
+        setMessage(result.message || 'The form has been closed.');
+        setFormAlreadyClosed(true);
+        return;
+      }
+
       const result = await res.json();
       setFormMembers(result.members || []);
     } catch (error) {
       console.error('Error fetching form members:', error);
+      setMessage('Error fetching form data.');
     }
   };
 
@@ -48,7 +58,7 @@ const ManageForm = () => {
         setMessage('Form closed successfully.');
         setEventClosed(true);
       } else {
-        setMessage(result.error || 'Failed to close form.');
+        setMessage(result.error || result.message || 'Failed to close form.');
       }
     } catch (error) {
       console.error('Error closing form:', error);
@@ -91,40 +101,51 @@ const ManageForm = () => {
         <button
           className="btn btn-danger"
           onClick={closeForm}
-          disabled={eventClosed}
+          disabled={eventClosed || formAlreadyClosed}
         >
-          {eventClosed ? 'Form Closed' : 'Stop Receiving Responses'}
+          {eventClosed || formAlreadyClosed ? 'Form Closed' : 'Stop Receiving Responses'}
         </button>
-        {message && <p className="mt-2">{message}</p>}
+        {message && <p className="mt-2 text-warning">{message}</p>}
       </div>
 
-      {/* Table */}
-      <div className="table-responsive bg-secondary p-3 rounded">
-        {formMembers.length > 0 ? (
-          <table className="table table-bordered table-dark table-striped mb-0">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Year</th>
-                <th>Department</th>
-                <th>Mode of Transport</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formMembers.map((member, index) => (
-                <tr key={index} className={getTransportRowClass(member.mode_of_transport)}>
-                  <td>{member.name}</td>
-                  <td>{member.year}</td>
-                  <td>{member.department}</td>
-                  <td>{member.mode_of_transport}</td>
+      {/* Table or Message */}
+      {!formAlreadyClosed ? (
+        <div className="table-responsive bg-secondary p-3 rounded">
+          {formMembers.length > 0 ? (
+            <table className="table table-bordered table-dark table-striped mb-0">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Year</th>
+                  <th>Department</th>
+                  <th>Mode of Transport</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-white text-center mb-0">No members have filled the form yet.</p>
-        )}
-      </div>
+              </thead>
+              <tbody>
+                {formMembers.map((member, index) => (
+                  <tr
+                    key={index}
+                    className={getTransportRowClass(member.mode_of_transport)}
+                  >
+                    <td>{member.name}</td>
+                    <td>{member.year}</td>
+                    <td>{member.department}</td>
+                    <td>{member.mode_of_transport}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="text-white text-center mb-0">
+              No members have filled the form yet.
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="text-center text-light fs-5 mt-4">
+          <p>This form has been closed and cannot be viewed.</p>
+        </div>
+      )}
     </div>
   );
 };

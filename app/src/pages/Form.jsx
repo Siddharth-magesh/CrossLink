@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { url_base } from '../config';
 
@@ -17,6 +17,30 @@ const Form = () => {
     emergency_contact: '',
     agreed: false,
   });
+
+  const [formOpen, setFormOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkFormStatus = async () => {
+      try {
+        const res = await fetch(`${url_base}/api/form_status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event_id: eventId }),
+        });
+        const result = await res.json();
+        setFormOpen(result.form_status === true);
+      } catch (error) {
+        console.error('Error checking form status:', error);
+        setFormOpen(false); // fallback to closed
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkFormStatus();
+  }, [eventId]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -57,6 +81,25 @@ const Form = () => {
       alert('Error submitting form.');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="vh-100 bg-dark text-white d-flex justify-content-center align-items-center">
+        <p className="fs-5">Loading form...</p>
+      </div>
+    );
+  }
+
+  if (!formOpen) {
+    return (
+      <div className="vh-100 bg-dark text-white d-flex justify-content-center align-items-center">
+        <div className="text-center">
+          <h4 className="text-danger mb-3">This form is currently closed.</h4>
+          <p>Please contact the event organizer for more information.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

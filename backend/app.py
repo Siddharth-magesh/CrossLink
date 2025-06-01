@@ -14,7 +14,24 @@ CORS(app)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
 
+def initialize_collections(mongo):
+    required_collections = [
+        "admin_members",
+        "event_chats",
+        "event_forms",
+        "events",
+        "group_chats",
+        "members",
+        "onduty"
+    ]
+    db = mongo.db
+    existing_collections = db.list_collection_names()
+    for collection in required_collections:
+        if collection not in existing_collections:
+            db.create_collection(collection)
+
 mongo = PyMongo(app)
+initialize_collections(mongo)
 event_manager = EventManager(mongo)
 authentication = Authentication(mongo)
 OnDutyGenerator = ODGenerator(mongo)

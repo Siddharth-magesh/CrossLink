@@ -530,15 +530,59 @@ class EventManager:
                 for member in registered_members
                 if member.get("registration_number")
             ]
-            print(f"Registration numbers to add: {registration_numbers}")
 
             if registration_numbers:
                 self.add_members_to_event({
                     "registration_numbers": registration_numbers,
                     "event_id": event_id
                 })
+            
+            self.add_members_to_event_group({
+                "registration_numbers": registration_numbers,
+                "event_id": event_id
+            })
 
             return jsonify({"message": "Event form closed and members added"}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+    def add_members_to_event_group(self, data):
+        try:
+            event_id = data.get("event_id")
+            registration_numbers = data.get("registration_numbers", [])
+
+            if not event_id or not registration_numbers:
+                return jsonify({"error": "Missing event_id or registration_numbers"}), 400
+
+            event = self.mongo.db.events.find_one({"event_id": event_id})
+            if not event:
+                return jsonify({"error": "Event not found"}), 404
+
+            group_name = event.get("event_name", f"Event Group {event_id}")
+
+            existing_group = self.mongo.db.event_chats.find_one({"group_id": event_id})
+            if not existing_group:
+                self.mongo.db.event_chats.insert_one({
+                    "group_id": event_id,
+                    "group_name": group_name,
+                    "chat": []
+                })
+
+            for reg_no in registration_numbers:
+                self.mongo.db.members.update_one(
+                    {"registration_number": reg_no},
+                    {
+                        "$addToSet": {
+                            "event_groups": {
+                                "group_id": event_id,
+                                "group_name": group_name
+                            }
+                        }
+                    }
+                )
+
+            return jsonify({"message": "Event group created and students updated"}), 200
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500

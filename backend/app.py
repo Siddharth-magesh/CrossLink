@@ -172,6 +172,11 @@ def main_group_details():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.get_main_group_details(data)
 
+@app.route('/api/event_group_details', methods=['POST'])
+def event_group_details():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.get_event_group_details(data)
+
 @app.route('/api/view_event_form', methods=['POST'])
 def view_event_form():
     data = request.get_json() if request.method == 'POST' else None
@@ -187,10 +192,20 @@ def group_chat():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.get_chat_messages(data)
 
+@app.route('/api/event_chat', methods=['POST'])
+def event_chat():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.get_event_chat_messages(data)
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.add_chat_message(data)
+
+@app.route('/api/chat_events', methods=['POST'])
+def chat_events():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.add_event_chat_message(data)
 
 @app.route('/api/submit_form', methods=['POST'])
 def submit_form():

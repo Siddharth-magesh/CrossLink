@@ -39,9 +39,7 @@ class Authentication:
                 return (False, None, None)
             
             user = self.mongo.db.members.find_one({"registration_number": registration_number})
-            print(f"User found: {user}")
             username = user.get("name", None) if user else None
-            print(f"Username: {username}")
 
             if not user or not check_password_hash(user.get("password", ""), password):
                 return (False, None, None)

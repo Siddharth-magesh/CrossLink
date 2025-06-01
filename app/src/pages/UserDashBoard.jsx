@@ -68,7 +68,7 @@ const UserDashboard = () => {
             <div
               className="p-4 bg-danger text-white rounded text-center fw-bold shadow"
               role="button"
-              onClick={() => navigate('/event-group')}
+              onClick={() => navigate('/events-group')}
             >
               Event Group
             </div>

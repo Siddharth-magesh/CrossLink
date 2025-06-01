@@ -65,7 +65,7 @@ class Authentication:
             print(f"Error in fetch_admin_members: {e}")
             return False
 
-    def signup(self, data):
+    def admin_signup(self, data):
         try:
             registration_number = data.get('registration_number')
             name = data.get('name')
@@ -82,6 +82,33 @@ class Authentication:
             # Save user (hashed password)
             hashed_password = generate_password_hash(password)
             self.mongo.db.admin_members.insert_one({
+                "registration_number": registration_number,
+                "name": name,
+                "password": hashed_password,
+                "email": email
+            })
+
+            return jsonify({"message": "Admin Signup successful"}), 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    def user_signup(self, data):
+        try:
+            registration_number = data.get('registration_number')
+            name = data.get('name')
+            password = data.get('password')
+            email = data.get('email')
+
+            if not all([registration_number, name, password, email]):
+                return jsonify({"error": "All fields are required"}), 400
+
+            # Check if user already exists
+            if self.mongo.db.members.find_one({"registration_number": registration_number}):
+                return jsonify({"error": "User already exists"}), 409
+
+            # Save user (hashed password)
+            hashed_password = generate_password_hash(password)
+            self.mongo.db.members.insert_one({
                 "registration_number": registration_number,
                 "name": name,
                 "password": hashed_password,

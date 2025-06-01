@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { url_base } from '../config';
 
-const Signup = () => {
+const SignupAdmin = () => {
   const [form, setForm] = useState({
     registration_number: '',
     name: '',
@@ -20,7 +20,7 @@ const Signup = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch(`${url_base}/api/user_signup`, {
+      const res = await fetch(`${url_base}/api/admin_signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
@@ -28,7 +28,7 @@ const Signup = () => {
       const data = await res.json();
       if (res.ok) {
         alert('Signup successful! Please login.');
-        navigate('/user-login');
+        navigate('/admin-login');
       } else {
         setError(data.error || 'Signup failed');
       }
@@ -40,7 +40,7 @@ const Signup = () => {
   return (
     <div className="d-flex vh-100 justify-content-center align-items-center bg-dark text-white">
       <form onSubmit={handleSignup} className="w-75">
-        <h2 className="mb-4 text-center">Signup</h2>
+        <h2 className="mb-4 text-center">Admin Signup</h2>
         {error && <div className="alert alert-danger">{error}</div>}
         <div className="mb-3">
           <label className="form-label">Registration Number</label>
@@ -102,4 +102,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignupAdmin;

@@ -31,56 +31,6 @@ def home():
 
 # Authentication 
 
-@app.route('/api/user_signup', methods=['POST'])
-def user_signup():
-    data = request.get_json()
-    return authentication.user_signup(data)
-
-@app.route('/api/admin_signup', methods=['POST'])
-def admin_signup():
-    data = request.get_json()
-    return authentication.admin_signup(data)
-
-@app.route('/api/admin_login', methods=['GET', 'POST'])
-def admin_login():
-    user_details = request.get_json() if request.method == 'POST' else None
-    auth_status, auth_token , username = authentication.validate_authentication(user_details)
-    
-    if auth_status:
-        return jsonify({
-            "message": "Login successful",
-            "token": auth_token,
-            "username" : username
-        }), 200
-    else:
-        return jsonify({"error": "Invalid credentials"}), 401
-
-@app.route('/api/user_login', methods=['POST'])
-def user_login():
-    user_data = request.get_json() if request.method == 'POST' else None    
-    auth_status, registration_number, username = authentication.validate_user_authentication(user_data)
-    
-    if auth_status:
-        return jsonify({
-            "message": "Login successful",
-            "token": registration_number,
-            "username": username
-        }), 200
-    else:
-        return jsonify({"error": "Invalid credentials"}), 401
-
-@app.route('/api/fetch_admin_profile', methods=['POST'])
-def fetch_admin_profile():
-    user_details = request.get_json()
-    result = authentication.fetch_admin_members(user_details)
-    if result:
-        name, email = result
-        return jsonify({"name": name, "email": email}), 200
-    else:
-        return jsonify({"error": "User not found"}), 404
-
-# Event Management
-
 @app.route('/api/add_event', methods=['POST'])
 def add_event():
     event_data = request.get_json()
@@ -94,11 +44,6 @@ def add_event():
         "eligible_years": event_data["eligible_years"]
     })
 
-@app.route('/api/add_members', methods=['POST'])
-def add_members():
-    data = request.get_json() if request.method == 'POST' else None
-    return event_manager.add_members_to_event(data)
-
 @app.route('/api/view_events',methods=['GET','POST'])
 def view_events():
     data = request.get_json() if request.method == 'POST' else None
@@ -108,57 +53,6 @@ def view_events():
 def fetch_event_details():
     data = request.get_json() if request.method == 'POST' else None
     return event_manager.fetch_event_details(data)
-
-@app.route('/api/close_events',methods=['GET','POST'])
-def close_events():
-    data = request.get_json() if request.method == 'POST' else None
-    return event_manager.close_event(data)
-
-@app.route('/api/view_event_form', methods=['POST'])
-def view_event_form():
-    data = request.get_json() if request.method == 'POST' else None
-    return event_manager.view_event_form(data)
-
-@app.route('/api/submit_form', methods=['POST'])
-def submit_form():
-    data = request.get_json() if request.method == 'POST' else None
-    return event_manager.submit_event_form(data)
-
-@app.route('/api/close_form', methods=['POST'])
-def close_form():
-    data = request.get_json() if request.method == 'POST' else None
-    return event_manager.close_event_form(data)
-
-@app.route('/api/form_status', methods=['POST'])
-def form_status():
-    data = request.get_json() if request.method == 'POST' else None
-    return event_manager.event_form_status(data)
-
-# Student Management
-
-@app.route('/api/upload_members_data', methods=['POST'])
-def upload_members_data():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-    if not file.filename.endswith('.csv'):
-        return jsonify({"error": "File is not a CSV"}), 400
-    result, status = event_manager.add_students_from_csv(file)
-    return jsonify(result), status
-
-@app.route('/api/fetch_members', methods=['GET', 'POST'])
-def fetch_members():
-    filters = request.get_json() if request.method == 'POST' else None
-    return event_manager.fetch_members(filters)
-
-# Attendance
-
-@app.route('/api/mark_attendence',methods=['GET','POST'])
-def mark_attendence():
-    data = request.get_json() if request.method == 'POST' else None
-    return event_manager.mark_attendence(data)
 
 @app.route('/api/fetch_individual_data',methods=['GET','POST'])
 def fetch_individual_data():
@@ -170,8 +64,59 @@ def fetch_individual_data_manual():
     data = request.get_json() if request.method == 'POST' else None
     return event_manager.fetch_individual_manual(data)
 
-# On-Duty Management
-   
+@app.route('/api/mark_attendence',methods=['GET','POST'])
+def mark_attendence():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.mark_attendence(data)
+
+@app.route('/api/fetch_members', methods=['GET', 'POST'])
+def fetch_members():
+    filters = request.get_json() if request.method == 'POST' else None
+    return event_manager.fetch_members(filters)
+
+@app.route('/api/close_events',methods=['GET','POST'])
+def close_events():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.close_event(data)
+
+@app.route('/api/admin_login', methods=['GET', 'POST'])
+def login():
+    user_details = request.get_json() if request.method == 'POST' else None
+    auth_status, auth_token , username = authentication.validate_authentication(user_details)
+    
+    if auth_status:
+        return jsonify({
+            "message": "Login successful",
+            "token": auth_token,
+            "username" : username
+        }), 200
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
+    
+@app.route('/api/user_login', methods=['POST'])
+def user_login():
+    user_data = request.get_json() if request.method == 'POST' else None    
+    auth_status, registration_number, username = authentication.validate_user_authentication(user_data)
+    
+    if auth_status:
+        return jsonify({
+            "message": "Login successful",
+            "token": registration_number,
+            "username": username
+        }), 200
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
+  
+@app.route('/api/fetch_admin_profile', methods=['POST'])
+def fetch_admin_profile():
+    user_details = request.get_json()
+    result = authentication.fetch_admin_members(user_details)
+    if result:
+        name, email = result
+        return jsonify({"name": name, "email": email}), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
 @app.route('/api/generate_od', methods=['POST'])
 def generate_od():
     data = request.get_json()
@@ -204,14 +149,27 @@ def delete_onduty():
     data = request.get_json() if request.method == 'POST' else None
     return OnDutyGenerator.delete_onduty(data)
 
-# Google Drive Integration
-
 @app.route('/api/create_drive_folder', methods=['POST'])
 def create_drive_folder():
     data = request.get_json()
     return drivemanager.create_folder(data)
 
-# Group Management
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    return authentication.signup(data)
+
+@app.route('/api/upload_members_data', methods=['POST'])
+def upload_members_data():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    if not file.filename.endswith('.csv'):
+        return jsonify({"error": "File is not a CSV"}), 400
+    result, status = event_manager.add_students_from_csv(file)
+    return jsonify(result), status
 
 @app.route('/api/main_group_details', methods=['POST'])
 def main_group_details():
@@ -223,7 +181,15 @@ def event_group_details():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.get_event_group_details(data)
 
-# Chat Management
+@app.route('/api/view_event_form', methods=['POST'])
+def view_event_form():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.view_event_form(data)
+
+@app.route('/api/close_form', methods=['POST'])
+def close_form():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.close_event_form(data)
 
 @app.route('/api/group_chat', methods=['POST'])
 def group_chat():
@@ -245,7 +211,20 @@ def chat_events():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.add_event_chat_message(data)
 
-# Main Function
+@app.route('/api/submit_form', methods=['POST'])
+def submit_form():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.submit_event_form(data)
+
+@app.route('/api/form_status', methods=['POST'])
+def form_status():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.event_form_status(data)
+
+@app.route('/api/add_members', methods=['POST'])
+def add_members():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.add_members_to_event(data)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

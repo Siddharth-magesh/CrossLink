@@ -33,7 +33,7 @@ conda activate crosslink-env
 ### **3️⃣ Clone the Repository**
 
 ```bash
-git clone - Download Miniconda from: https://github.com/Siddharth-magesh/CrossLink.git
+git clone https://github.com/Siddharth-magesh/CrossLink.git
 cd CrossLink
 ```
 

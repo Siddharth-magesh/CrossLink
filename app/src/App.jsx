@@ -5,7 +5,7 @@ import AdminLogin from "./pages/AdminLogin";
 import UserLogin from "./pages/UserLogin";
 import Events from "./pages/Events";
 import CreateEvent from "./pages/CreateEvent";
-import AddMembers from "./pages/AddMembers";
+import AddMembers from "./pages/AddMembers"; /*This Page is not used in the current app*/
 import ManageEvent from "./pages/ManageEvent";
 import ScanQR from "./pages/ScanQR";
 import ScanResult from "./pages/ScanResult";

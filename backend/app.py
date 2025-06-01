@@ -40,11 +40,6 @@ def add_event():
         "eligible_years": event_data["eligible_years"]
     })
 
-@app.route('/api/add_members',methods=['GET','POST'])
-def add_members():
-    data = request.get_json() if request.method == 'POST' else None
-    return event_manager.add_members_to_event(data)
-
 @app.route('/api/view_events',methods=['GET','POST'])
 def view_events():
     data = request.get_json() if request.method == 'POST' else None
@@ -201,6 +196,11 @@ def chat():
 def submit_form():
     data = request.get_json() if request.method == 'POST' else None
     return event_manager.submit_event_form(data)
+
+@app.route('/api/form_status', methods=['POST'])
+def form_status():
+    data = request.get_json() if request.method == 'POST' else None
+    return event_manager.event_form_status(data)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

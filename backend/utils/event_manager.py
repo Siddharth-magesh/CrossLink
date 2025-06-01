@@ -305,15 +305,20 @@ class EventManager:
 
     def add_members_to_event(self, data):
         try:
-            yrc_members_id = data.get("yrc_members_id", [])
+            registration_numbers = data.get("registration_numbers", [])
             event_id = data.get("event_id")
 
-            if not event_id or not isinstance(yrc_members_id, list):
+            if not event_id or not isinstance(registration_numbers, list):
                 return jsonify({"error": "Invalid data"}), 400
 
             student_details = [
-                {"yrc_id": yrc_id, "status": None, "present_time": None, "leaving_time": None}
-                for yrc_id in yrc_members_id
+                {
+                    "registration_number": reg_no,
+                    "status": None,
+                    "present_time": None,
+                    "leaving_time": None
+                }
+                for reg_no in registration_numbers
             ]
 
             events_collection = self.mongo.db.events
@@ -333,7 +338,7 @@ class EventManager:
                 event.get("event_start_time"),
                 event.get("event_end_time"),
                 event.get("event_location"),
-                yrc_members_id
+                registration_numbers
             )
 
             return jsonify({"message": "Members added and emails sent successfully"}), 200
@@ -390,7 +395,7 @@ class EventManager:
 
     def generate_emails(self, event_id, event_name, event_date, event_start_time, event_end_time, event_location, member_ids):
         def process_member(member_id):
-            member = self.mongo.db.members.find_one({"yrc_id": member_id})
+            member = self.mongo.db.members.find_one({"registration_number": member_id})
             if not member:
                 return
             email = member.get("email")
@@ -478,12 +483,14 @@ class EventManager:
             if not form_data:
                 return jsonify({"error": "Event form not found"}), 404
 
+            if not form_data.get("form_status", False):
+                return jsonify({"message": "The form has been closed"}), 403
+
             members = form_data.get("registered_members", [])
 
             if not members:
                 return jsonify({"members": []}), 200
 
-            # Return all relevant fields directly
             filtered_members = [
                 {
                     "name": member.get("name", ""),
@@ -499,7 +506,7 @@ class EventManager:
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
-    def close_event_form(self,data):
+    def close_event_form(self, data):
         try:
             event_id = data.get("event_id")
             if not event_id:
@@ -513,10 +520,30 @@ class EventManager:
             if result.modified_count == 0:
                 return jsonify({"message": "No form found or already closed"}), 404
 
-            return jsonify({"message": "Event form closed successfully"}), 200
+            form_data = self.mongo.db.event_forms.find_one({"event_id": event_id})
+            if not form_data:
+                return jsonify({"error": "Event form not found after closing"}), 404
+
+            registered_members = form_data.get("registered_members", [])
+            registration_numbers = [
+                member.get("registration_number")
+                for member in registered_members
+                if member.get("registration_number")
+            ]
+            print(f"Registration numbers to add: {registration_numbers}")
+
+            if registration_numbers:
+                self.add_members_to_event({
+                    "registration_numbers": registration_numbers,
+                    "event_id": event_id
+                })
+
+            return jsonify({"message": "Event form closed and members added"}), 200
+
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-        
+
+
     def submit_event_form(self, data):
         try:
             event_id = data.get('event_id')
@@ -554,3 +581,22 @@ class EventManager:
         except Exception as e:
             print(f"Error in submit_event_form: {e}")
             return jsonify({"success": False, "message": "Internal server error"}), 500
+        
+    def event_form_status(self, data):
+        try:
+            event_id = data.get("event_id")
+            if not event_id:
+                return jsonify({"error": "Missing event_id"}), 400
+
+            form_data = self.mongo.db.event_forms.find_one(
+                {"event_id": event_id},
+                {"form_status": 1, "_id": 0}
+            )
+
+            if not form_data:
+                return jsonify({"error": "Event form not found"}), 404
+
+            return jsonify({"form_status": form_data.get("form_status", False)}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500

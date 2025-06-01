@@ -77,7 +77,7 @@ const UserDashboard = () => {
             <div
               className="p-4 bg-danger text-white rounded text-center fw-bold shadow"
               role="button"
-              onClick={() => navigate('/forum')}
+              onClick={() => navigate('/form')}
             >
               Forum
             </div>

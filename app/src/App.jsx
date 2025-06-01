@@ -13,6 +13,7 @@ import ManualAttendance from "./pages/ManualAttendance";
 import GenerateOnDuty from "./pages/GenerateOnDuty";
 import OnDuty from "./pages/OnDuty";
 import Signup from "./pages/Signup";
+import SignupAdmin from "./pages/Signup-admin";
 import StudentManagement from "./pages/StudentManagement";
 import PwaInstallPrompt from "./pages/PwaInstallPrompt";
 import UserDashboard from "./pages/UserDashBoard";
@@ -42,7 +43,8 @@ function App() {
           <Route path="/manual-attendance" element={<ManualAttendance />} />
           <Route path="/generate-onduty" element={<GenerateOnDuty />} />
           <Route path="/onduty" element={<OnDuty />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/user-signup" element={<Signup />} />
+          <Route path="/signup-admin" element={<SignupAdmin  />} />
           <Route path="/student-management" element={<StudentManagement />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/main-group" element={<MainGroup />} />

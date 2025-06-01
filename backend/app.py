@@ -31,13 +31,18 @@ def home():
 
 # Authentication 
 
-@app.route('/api/signup', methods=['POST'])
-def signup():
+@app.route('/api/user_signup', methods=['POST'])
+def user_signup():
     data = request.get_json()
-    return authentication.signup(data)
+    return authentication.user_signup(data)
+
+@app.route('/api/admin_signup', methods=['POST'])
+def admin_signup():
+    data = request.get_json()
+    return authentication.admin_signup(data)
 
 @app.route('/api/admin_login', methods=['GET', 'POST'])
-def login():
+def admin_login():
     user_details = request.get_json() if request.method == 'POST' else None
     auth_status, auth_token , username = authentication.validate_authentication(user_details)
     

@@ -28,6 +28,7 @@ const AdminLogin = () => {
 
       if (res.ok) {
         loginUser(data.token, data.username);
+        localStorage.setItem('admin_auth', 'true');
         navigate('/main');
       } else {
         setError(data.error || 'Login failed');
@@ -67,6 +68,7 @@ const AdminLogin = () => {
         </div>
 
         <button type="submit" className="btn btn-danger w-100">Login</button>
+
         <div className="text-center mt-3">
           <span>Don't have an account? </span>
           <span
@@ -77,6 +79,7 @@ const AdminLogin = () => {
             Signup
           </span>
         </div>
+
         <div className="text-center mt-3">
           <span>User Login </span>
           <span
@@ -92,4 +95,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin
+export default AdminLogin;

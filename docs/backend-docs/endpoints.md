@@ -228,6 +228,29 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
+### POST `/api/student_grievances`
+
+* **Description:** Fetch all members grievances.
+* **Response:** `jsonify(grievances)`
+
+---
+
+### POST `/api/close_grievance`
+
+* **Description:** Closes members grievances.
+* **Request JSON:** (optional filters)
+
+  ```json
+  {
+    "request_id": "123456789",
+    "managed_admin_id":"113222072000",
+    "response_notes":"<str>"
+  }
+  ```
+* **Response:** `{'message': 'Grievance closed and response recorded successfully'}`
+
+---
+
 ##  Attendance
 
 ### POST `/api/mark_attendence`
@@ -445,6 +468,8 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
   ```
 * **Response:** `{ "{'user_details': ... } }`
 
+---
+
 ### POST `/api/update_student_details`
 
 * **Description:** Updates the User Details for the given Reg Number.
@@ -456,6 +481,28 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
   }
   ```
 * **Response:** `{ "{'success': True, 'message': 'User details updated successfully'} }`
+
+---
+
+### POST `/api/forum_query`
+
+* **Description:** Sends the Grievances from the student.
+* **Request JSON:**
+
+  ```json
+  {
+    'user_id': data.get('userId'),
+    'category': data.get('category'),
+    'subject': data.get('subject', ''),
+    'description': data.get('description'),
+    'phone_number': data.get('phone_number', ''),
+    'preferred_contact_time': data.get('preferred_contact_time', ''),
+    'email': data.get('email', ''),
+    'anonymous': data.get('anonymous', False),
+    'additional_notes': data.get('additional_notes', '')
+  }
+  ```
+* **Response:** `{'message': 'Your request has been successfully sent to the authorities. You will be contacted via your provided phone number.'}`
 
 ##  Miscellaneous
 

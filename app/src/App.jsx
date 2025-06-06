@@ -24,6 +24,8 @@ import Form from "./pages/Form";
 import EventsGroup from "./pages/EventsGroup";
 import EventChat from "./pages/EventChat";
 import UserProfile from "./pages/UserProfile";
+import Forum from "./pages/Forum";
+import StudentGrievances from "./pages/StudentGrievances";
 
 function App() {
   return (
@@ -55,6 +57,8 @@ function App() {
           <Route path="/events-group" element={<EventsGroup />} />
           <Route path="/event-chat" element={<EventChat />} />
           <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/forum" element={<Forum />} />
+          <Route path="/student-grievances" element={<StudentGrievances />} />
           {/* Add more routes as needed */}
         </Routes>
       </Router>

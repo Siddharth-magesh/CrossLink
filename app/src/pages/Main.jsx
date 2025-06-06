@@ -16,8 +16,16 @@ const Main = () => {
     navigate('/');
   };
 
+  const tiles = [
+    { label: 'Events', route: '/events' },
+    { label: 'Attendance', route: '/attendance' },
+    { label: 'OnDuty', route: '/onduty' },
+    { label: 'Manage Students', route: '/student-management' },
+    { label: 'Grievance Dashboard', route: '/student-grievances' },
+  ];
+
   return (
-    <div className="vh-100 bg-dark text-white p-3 d-flex flex-column">
+    <div className="vh-100 bg-dark text-white p-3 d-flex flex-column overflow-auto">
       
       {/* Top Bar */}
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -41,7 +49,9 @@ const Main = () => {
           </button>
           <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
             <li>
-              <span className="dropdown-item text-muted">Profile</span>
+              <span className="dropdown-item text-muted" role="button" onClick={() => navigate('/profile')}>
+                Profile
+              </span>
             </li>
             <li>
               <button className="dropdown-item text-danger" onClick={handleLogout}>
@@ -54,39 +64,18 @@ const Main = () => {
 
       {/* Tiles Section */}
       <div className="container">
-        <div className="row g-3">
-          <div className="col-6">
-            <div
-              className="p-4 bg-danger text-white rounded text-center fw-bold shadow"
-              role="button"
-              onClick={() => navigate('/events')}
-            >
-              Events
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          {tiles.map((tile, index) => (
+            <div className="col" key={index}>
+              <div
+                className="p-4 bg-danger text-white rounded text-center fw-bold shadow h-100"
+                role="button"
+                onClick={() => navigate(tile.route)}
+              >
+                {tile.label}
+              </div>
             </div>
-          </div>
-          <div className="col-6">
-            <div className="p-4 bg-danger text-white rounded text-center fw-bold shadow">
-              Attendance
-            </div>
-          </div>
-          <div className="col-6">
-            <div
-              className="p-4 bg-danger text-white rounded text-center fw-bold shadow"
-              role="button"
-              onClick={() => navigate('/onduty')}
-            >
-              OnDuty
-            </div>
-          </div>
-          <div className="col-6">
-            <div
-              className="p-4 bg-danger text-white rounded text-center fw-bold shadow"
-              role="button"
-              onClick={() => navigate('/student-management')}
-            >
-              Student Management
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 

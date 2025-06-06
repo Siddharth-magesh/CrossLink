@@ -244,3 +244,93 @@ class MemberManager:
             print("Error in update_user_details:", e)
             return jsonify({'error': 'Internal server error'}), 500
 
+    def send_forum_query(self, data):
+        try:
+            if not data or 'userId' not in data:
+                return jsonify({'error': 'Missing user ID or request data'}), 400
+
+            forum_data = {
+                'request_id': str(uuid.uuid4()),
+                'user_id': data.get('userId'),
+                'category': data.get('category'),
+                'subject': data.get('subject', ''),
+                'description': data.get('description'),
+                'phone_number': data.get('phone_number', ''),
+                'preferred_contact_time': data.get('preferred_contact_time', ''),
+                'email': data.get('email', ''),
+                'anonymous': data.get('anonymous', False),
+                'additional_notes': data.get('additional_notes', ''),
+                'status': False,
+                'managed_admin_id': None,
+                'response_notes': None,
+                'submitted_at': datetime.utcnow()
+            }
+
+            self.mongo.db.student_forum.insert_one(forum_data)
+
+            return jsonify({
+                'message': 'Your request has been successfully sent to the authorities. You will be contacted via your provided phone number.'
+            }), 200
+
+        except Exception as e:
+            print("Error in send_forum_query:", e)
+            return jsonify({
+                'error': 'Failed to send your query. Please reach out to one of the core members directly.'
+            }), 500
+        
+    def student_grievances(self, data):
+        try:
+            grievances = list(self.mongo.db.student_forum.find({'status': False}))
+
+            for g in grievances:
+                g['_id'] = str(g['_id'])
+
+                if 'submitted_at' in g and isinstance(g['submitted_at'], datetime):
+                    g['submitted_at'] = g['submitted_at'].isoformat()
+
+                if not g.get('anonymous', False):
+                    user_id = g.get('user_id')
+                    student = self.mongo.db.members.find_one({'registration_number': user_id})
+                    if student:
+                        g['student_name'] = student.get('name', 'N/A')
+                        g['year'] = student.get('year', 'N/A')
+                        g['department'] = student.get('department', 'N/A')
+                    else:
+                        g['student_name'] = 'Unknown'
+                        g['year'] = 'Unknown'
+                        g['department'] = 'Unknown'
+
+            return jsonify(grievances), 200
+
+        except Exception as e:
+            return jsonify({'error': 'Unable to fetch grievances at this time. Please try again later.'}), 500
+
+
+    def update_student_grievances(self, data):
+        try:
+            request_id = data.get('request_id')
+            managed_admin_id = data.get('managed_admin_id')
+            response_notes = data.get('response_notes')
+
+            if not request_id:
+                return jsonify({'error': 'Missing request_id'}), 400
+
+            result = self.mongo.db.student_forum.update_one(
+                {'request_id': request_id},
+                {
+                    '$set': {
+                        'status': True,
+                        'managed_admin_id': managed_admin_id,
+                        'response_notes': response_notes,
+                        'closed_date_time': datetime.utcnow()
+                    }
+                }
+            )
+
+            if result.matched_count == 0:
+                return jsonify({'error': 'No grievance found with the given request_id'}), 404
+
+            return jsonify({'message': 'Grievance closed and response recorded successfully'}), 200
+
+        except Exception as e:
+            return jsonify({'error': 'Unable to manage grievances at this time. Please try again later.'}), 500

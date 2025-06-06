@@ -431,6 +431,32 @@ This document describes all REST API endpoints for the CrossLink backend (Flask)
 
 ---
 
+##  User Profile Management
+
+### POST `/api/user_details`
+
+* **Description:** Fetch the User Details for the given Reg Number.
+* **Request JSON:**
+
+  ```json
+  {
+    "registration_number": "113222072001"
+  }
+  ```
+* **Response:** `{ "{'user_details': ... } }`
+
+### POST `/api/update_student_details`
+
+* **Description:** Updates the User Details for the given Reg Number.
+* **Request JSON:**
+
+  ```json
+  {
+    "registration_number": "113222072001"
+  }
+  ```
+* **Response:** `{ "{'success': True, 'message': 'User details updated successfully'} }`
+
 ##  Miscellaneous
 
 ### GET `/`

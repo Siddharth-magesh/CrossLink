@@ -5,9 +5,15 @@
     "email": "slathasree1975@gmail.com",
     "password": "scrypt:32768:8:1$O8wx2Ylb9Y5nTFQm$1c0e3c6a31cddc3ad563ab14d6c957b9d3589fce6299370e0a05adbfd7eb0364be7bb62f1d5c2d5b133d3d3f462ca7d12d00fb438c94f43012223a7b3182c35f",
     "name": "test1",
+    "desgination": "Volunteer",
     "year": 4,
     "department": "CSE",
     "section": "A",
+    "mobile_number": "1234567890",
+    "address": "123 Main St, City, Country",
+    "secondary_mobile_number": "0987654321",
+    "blood_group": "O+",
+    "date_of_birth": "2000-01-01",
     "events_attended": 0,
     "allocated_groups": [
       {
@@ -23,9 +29,15 @@
     "email": "slathasree1975@gmail.com",
     "password": "scrypt:32768:8:1$O8wx2Ylb9Y5nTFQm$1c0e3c6a31cddc3ad563ab14d6c957b9d3589fce6299370e0a05adbfd7eb0364be7bb62f1d5c2d5b133d3d3f462ca7d12d00fb438c94f43012223a7b3182c35f",
     "name": "test2",
+    "desgination": "Volunteer",
     "year": 4,
     "department": "CSE",
     "section": "A",
+    "mobile_number": "1234567890",
+    "address": "123 Main St, City, Country",
+    "secondary_mobile_number": "0987654321",
+    "blood_group": "O+",
+    "date_of_birth": "2000-01-01",
     "events_attended": 0,
     "allocated_groups": [
       {

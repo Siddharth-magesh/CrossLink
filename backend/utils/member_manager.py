@@ -171,3 +171,76 @@ class MemberManager:
         except Exception as e:
             print("Error in add_chat_message:", e)
             return jsonify({'error': 'Internal server error'}), 500
+        
+    
+    def fetch_user_details(self, data):
+        try:
+            registration_number = data.get('registration_number')
+            if not registration_number:
+                return jsonify({'error': 'Missing registration number'}), 400
+
+            user = self.mongo.db.members.find_one({'registration_number': registration_number})
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+
+            user_details = {
+                'yrc_id': user.get('yrc_id', ''),
+                'registration_number': user.get('registration_number', ''),
+                'email': user.get('email', ''),
+                'name': user.get('name', ''),
+                'designation': user.get('desgination', ''),
+                'year': user.get('year', ''),
+                'department': user.get('department', ''),
+                'section': user.get('section', ''),
+                'mobile_number': user.get('mobile_number', ''),
+                'secondary_mobile_number': user.get('secondary_mobile_number', ''),
+                'blood_group': user.get('blood_group', ''),
+                'mode_of_transport': user.get('mode_of_transport', ''),
+                'address': user.get('address', ''),
+                'date_of_birth': user.get('date_of_birth', ''),
+                'events_attended': user.get('events_attended', 0),
+                'allocated_groups': user.get('allocated_groups', []),
+                'event_groups': user.get('event_groups', [])
+            }
+
+            return jsonify({'user_details': user_details}), 200
+
+        except Exception as e:
+            print("Error in fetch_user_details:", e)
+            return jsonify({'error': 'Internal server error'}), 500
+
+    def update_user_details(self, data):
+        try:
+            registration_number = data.get('registration_number')
+            if not registration_number:
+                return jsonify({'error': 'Missing registration number'}), 400
+
+            user = self.mongo.db.members.find_one({'registration_number': registration_number})
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+
+            # Filter out fields to update: skip None, empty strings, or unchanged values
+            update_fields = {}
+            for k, v in data.items():
+                if k == 'registration_number':
+                    continue
+                if v is not None and v != '' and (k not in user or user[k] != v):
+                    update_fields[k] = v
+
+            if not update_fields:
+                return jsonify({'error': 'No valid fields to update'}), 400
+
+            result = self.mongo.db.members.update_one(
+                {'registration_number': registration_number},
+                {'$set': update_fields}
+            )
+
+            if result.modified_count > 0:
+                return jsonify({'success': True, 'message': 'User details updated successfully'}), 200
+            else:
+                return jsonify({'error': 'No changes made (fields may already be up to date)'}), 400
+
+        except Exception as e:
+            print("Error in update_user_details:", e)
+            return jsonify({'error': 'Internal server error'}), 500
+

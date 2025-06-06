@@ -1,16 +1,18 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isAuthenticated } from '../utils/session';
+import { isAuthenticated, isAdmin } from '../utils/session';
 
 const Landing = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (isAuthenticated()) {
-        navigate('/main');
+      if (isAdmin()) {
+        navigate('/main'); // Admin dashboard
+      } else if (isAuthenticated()) {
+        navigate('/user-dashboard'); // User dashboard
       } else {
-        navigate('/user-login');
+        navigate('/user-login'); // Not logged in
       }
     }, 1000);
 

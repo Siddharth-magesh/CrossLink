@@ -11,3 +11,8 @@ export const loginUser = (userId, username) => {
 export const logoutUser = () => {
   localStorage.clear();
 };
+
+export const isAdmin = () => {
+  return localStorage.getItem('admin_auth') === 'true';
+};
+

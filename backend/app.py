@@ -262,6 +262,18 @@ def chat_events():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.add_event_chat_message(data)
 
+# User Profile Management
+
+@app.route('/api/user_details', methods=['POST'])
+def user_details():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.fetch_user_details(data)
+
+@app.route('/api/update_student_details', methods=['POST'])
+def update_student_details():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.update_user_details(data)
+
 # Main Function
 
 if __name__ == '__main__':

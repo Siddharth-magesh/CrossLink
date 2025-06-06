@@ -179,6 +179,40 @@ crosslink
 
 ---
 
+### 7. `student_forum`
+
+**Description:** Stores the Student Grievances and records.
+
+**Sample Document:**
+```json
+{
+  "_id": {
+    "$oid": "6842f7603392b992c41fdd7f"
+  },
+  "request_id": "c6d40d8c-ef3b-40c6-b23d-67fd0fdc6eog",
+  "user_id": "113222072001",
+  "category": "Technical/Platform Issues",
+  "subject": "Cant able to login in to the app",
+  "description": "I have forgot my password and email id creds for the cross link app",
+  "phone_number": "0123456789",
+  "preferred_contact_time": "Tuesday after 7:00 pm",
+  "email": "test@gmail.com",
+  "anonymous": false,
+  "additional_notes": "need to fix it soon as i need to attend this weeks events",
+  "status": true,
+  "managed_admin_id": "113222072094",
+  "response_notes": "Application is currently under maintiance, check after 48 hours",
+  "submitted_at": {
+    "$date": "2025-06-06T14:12:48.813Z"
+  },
+  "closed_date_time": {
+    "$date": "2025-06-06T14:58:40.850Z"
+  }
+}
+```
+
+---
+
 ## Notes
 
 - All passwords are securely hashed (e.g., using scrypt).

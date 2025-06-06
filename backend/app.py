@@ -22,7 +22,8 @@ def initialize_collections(mongo):
         "events",
         "group_chats",
         "members",
-        "onduty"
+        "onduty",
+        "student_forum"
     ]
     db = mongo.db
     existing_collections = db.list_collection_names()
@@ -170,6 +171,16 @@ def fetch_members():
     filters = request.get_json() if request.method == 'POST' else None
     return event_manager.fetch_members(filters)
 
+@app.route('/api/student_grievances', methods=['POST','GET'])
+def student_grievances():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.student_grievances(data)
+
+@app.route('/api/close_grievance', methods=['POST','GET'])
+def close_grievance():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.update_student_grievances(data)
+
 # Attendance
 
 @app.route('/api/mark_attendence',methods=['GET','POST'])
@@ -273,6 +284,11 @@ def user_details():
 def update_student_details():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.update_user_details(data)
+
+@app.route('/api/forum_query', methods=['POST'])
+def forum_query():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.send_forum_query(data)
 
 # Main Function
 

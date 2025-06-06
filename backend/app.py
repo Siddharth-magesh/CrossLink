@@ -23,7 +23,8 @@ def initialize_collections(mongo):
         "group_chats",
         "members",
         "onduty",
-        "student_forum"
+        "student_forum",
+        "student_archive"
     ]
     db = mongo.db
     existing_collections = db.list_collection_names()
@@ -180,6 +181,27 @@ def student_grievances():
 def close_grievance():
     data = request.get_json() if request.method == 'POST' else None
     return memberManager.update_student_grievances(data)
+
+@app.route('/api/fetch_students_data', methods=['POST','GET'])
+def fetch_students_data():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.get_students_lists(data)
+
+@app.route('/api/get_particular_student', methods=['POST'])
+def get_particular_student():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.extract_particular_student(data)
+
+@app.route('/api/update_student_record', methods=['POST'])
+def update_student_record():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.update_student_record(data)
+
+@app.route('/api/delete_student_record', methods=['POST'])
+def delete_student_record():
+    data = request.get_json() if request.method == 'POST' else None
+    return memberManager.delete_student_record(data)
+
 
 # Attendance
 

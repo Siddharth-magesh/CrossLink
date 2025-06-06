@@ -334,3 +334,81 @@ class MemberManager:
 
         except Exception as e:
             return jsonify({'error': 'Unable to manage grievances at this time. Please try again later.'}), 500
+
+    def get_students_lists(self, data):
+        try:
+            query = {}
+
+            if data:
+                year = data.get('year')
+                department = data.get('department')
+
+                if year:
+                    query['year'] = int(year)
+                if department:
+                    query['department'] = department
+
+            students_cursor = self.mongo.db.members.find(query)
+
+            students = []
+            for student in students_cursor:
+                student['_id'] = str(student['_id'])
+                students.append(student)
+
+            return jsonify(students), 200
+
+        except Exception as e:
+            print("Error fetching students:", e)
+            return jsonify({'error': 'Unable to fetch student lists at this time. Please try again later.'}), 500
+
+    def extract_particular_student(self, data):
+        if not data or 'registration_number' not in data:
+            return jsonify({'error': 'Registration number is required'}), 400
+
+        registration_number = data.get('registration_number')
+
+        student = self.mongo.db.members.find_one(
+            {'registration_number': registration_number},
+            {'_id': 0}
+        )
+
+        if not student:
+            return jsonify({'error': 'Student not found'}), 404
+
+        return jsonify(student), 200
+
+    def update_student_record(self, data):
+        if not data or 'registration_number' not in data:
+            return jsonify({'error': 'Registration number is required'}), 400
+
+        reg_no = data['registration_number']
+        update_data = data.copy()
+        del update_data['registration_number']
+
+        result = self.mongo.db.members.update_one(
+            {'registration_number': reg_no},
+            {'$set': update_data}
+        )
+
+        if result.matched_count == 0:
+            return jsonify({'error': 'Student not found'}), 404
+
+        return jsonify({'message': 'Student record updated successfully'}), 200
+    
+    def delete_student_record(self, data):
+        if not data or 'registration_number' not in data:
+            return jsonify({'error': 'Registration number is required'}), 400
+
+        reg_no = data['registration_number']
+
+        student = self.mongo.db.members.find_one({'registration_number': reg_no})
+        if not student:
+            return jsonify({'error': 'Student not found'}), 404
+
+        self.mongo.db.student_archive.insert_one(student)
+        
+        result = self.mongo.db.members.delete_one({'registration_number': reg_no})
+
+        return jsonify({'message': 'Student record archived and deleted successfully'}), 200
+
+

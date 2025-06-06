@@ -1,99 +1,145 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { url_base } from "../config";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { url_base } from '../config';
 
 const StudentManagement = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [students, setStudents] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState({ year: '', department: '', mostActive: false });
+  const [page, setPage] = useState(1);
+  const studentsPerPage = 10;
   const navigate = useNavigate();
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    setMessage("");
-    setError("");
-  };
+  useEffect(() => {
+    fetch(`${url_base}/api/fetch_students_data`)
+      .then(res => res.json())
+      .then(data => {
+        setStudents(data);
+        setFiltered(data);
+      })
+      .catch(err => console.error('Failed to load students:', err));
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
-    setError("");
-    if (!file) {
-      setError("Please select a CSV file.");
-      return;
+  useEffect(() => {
+    let temp = [...students];
+
+    // Search filter
+    if (search) {
+      temp = temp.filter((s) =>
+        s.name.toLowerCase().includes(search.toLowerCase()) ||
+        s.registration_number.includes(search)
+      );
     }
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      const res = await fetch(`${url_base}/api/upload_members_data`, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage(data.message || "Members added successfully!");
-        setFile(null);
-      } else {
-        setError(data.error || "Failed to add students.");
-      }
-    } catch (err) {
-      setError("Server error. Please try again.");
-    }
-  };
+
+    // Dropdown filters
+    if (filters.year) temp = temp.filter((s) => s.year === parseInt(filters.year));
+    if (filters.department) temp = temp.filter((s) => s.department === filters.department);
+    if (filters.mostActive) temp = temp.sort((a, b) => b.events_attended - a.events_attended);
+
+    setFiltered(temp);
+    setPage(1); // Reset page on filter change
+  }, [search, filters, students]);
+
+  const paginatedStudents = filtered.slice((page - 1) * studentsPerPage, page * studentsPerPage);
 
   return (
-    <div className="vh-100 bg-dark text-white p-3 d-flex flex-column">
-      {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4
-          className="text-danger fw-bold mb-0"
-          style={{ cursor: "pointer" }}
-          onClick={() => navigate("/")}
-        >
-          Cross<span className="text-white">Link</span>
-        </h4>
-        <span className="fw-semibold">
-          {localStorage.getItem("username") || "User"}
-        </span>
-      </div>
-      <h5 className="text-white mb-4 text-center">Student Management</h5>
-      <div
-        className="bg-secondary p-4 rounded mx-auto"
-        style={{ maxWidth: 500 }}
-      >
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Upload Student CSV</label>
-            <input
-              type="file"
-              className="form-control"
-              accept=".csv"
-              onChange={handleFileChange}
-            />
-          </div>
-          <button type="submit" className="btn btn-danger w-100">
-            Upload
+    <div className="container py-4 text-white bg-dark min-vh-100 position-relative">
+      <h4 className="text-danger mb-3">Student Management</h4>
+
+      {/* Filters */}
+      <div className="row mb-3 g-2">
+        <div className="col-md-4">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by name or reg. no"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="col-md-2">
+          <select
+            className="form-select"
+            value={filters.year}
+            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+          >
+            <option value="">All Years</option>
+            {[1, 2, 3, 4].map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-2">
+          <select
+            className="form-select"
+            value={filters.department}
+            onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+          >
+            <option value="">All Departments</option>
+            {[...new Set(students.map((s) => s.department))].map((dept) => (
+              <option key={dept} value={dept}>{dept}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-2">
+          <button
+            className="btn btn-outline-light w-100"
+            onClick={() => setFilters({ ...filters, mostActive: !filters.mostActive })}
+          >
+            {filters.mostActive ? 'Remove Activity Sort' : 'Most Events Attended'}
           </button>
-        </form>
-        {/* <div className="mt-3">
-          <a
-            href="/sample_data/student_data.json"
-            download
-            className="btn btn-outline-light btn-sm me-2"
-          >
-            Download Sample JSON
-          </a>
-          <a
-            href="/sample_data/sample_students.csv"
-            download
-            className="btn btn-outline-light btn-sm"
-          >
-            Download Sample CSV
-          </a>
-        </div> */}
-        {message && <div className="alert alert-success mt-3">{message}</div>}
-        {error && <div className="alert alert-danger mt-3">{error}</div>}
+        </div>
       </div>
+
+      {/* Student List */}
+        <div className="list-group">
+        {paginatedStudents.map((student) => (
+            <div
+            key={student.registration_number}
+            className="list-group-item bg-dark text-white mb-3 rounded border border-secondary shadow-sm"
+            role="button"
+            onClick={() => navigate('/student-edit', {
+                state: { registration_number: student.registration_number }
+            })}
+            >
+            <h6 className="mb-1">{student.name}</h6>
+            <p className="mb-1 text-light">
+                Reg No: {student.registration_number} | Dept: {student.department} | Year: {student.year}
+            </p>
+            <small className="text-info">Events Attended: {student.events_attended}</small>
+            </div>
+        ))}
+        </div>
+
+      {/* Pagination */}
+      <div className="d-flex justify-content-between align-items-center mt-3">
+        <button
+          className="btn btn-outline-light"
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+        >
+          Previous
+        </button>
+        <span className="text-muted">Page {page}</span>
+        <button
+          className="btn btn-outline-light"
+          disabled={page * studentsPerPage >= filtered.length}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </button>
+      </div>
+
+      {/* Floating Add Button */}
+      <button
+        className="btn btn-danger rounded-circle position-fixed"
+        style={{ bottom: '30px', right: '30px', width: '60px', height: '60px', fontSize: '24px' }}
+        title="Add Students"
+        onClick={() => navigate('/student-upload')}
+      >
+        +
+      </button>
     </div>
   );
 };

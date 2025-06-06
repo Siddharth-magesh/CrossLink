@@ -26,6 +26,8 @@ import EventChat from "./pages/EventChat";
 import UserProfile from "./pages/UserProfile";
 import Forum from "./pages/Forum";
 import StudentGrievances from "./pages/StudentGrievances";
+import StudentUpload from "./pages/StudentUpload";
+import StudentEdit from './pages/StudentEdit';
 
 function App() {
   return (
@@ -59,6 +61,8 @@ function App() {
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/forum" element={<Forum />} />
           <Route path="/student-grievances" element={<StudentGrievances />} />
+          <Route path="/student-upload" element={<StudentUpload />} />
+          <Route path="/student-edit" element={<StudentEdit />} />
           {/* Add more routes as needed */}
         </Routes>
       </Router>
